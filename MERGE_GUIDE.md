@@ -21,6 +21,8 @@ git add .
 git commit -m "WIP: Save current work"
 ```
 
+## Étape 2 : Nettoyer les fichiers non suivis (IMPORTANT avant merge)
+
 ## Étape 3 : Se positionner sur main
 
 ```bash
@@ -56,6 +58,7 @@ Git vous dira quels fichiers ont des conflits. Pour chaque fichier :
 5. **Sauvegarder** le fichier
 
 6. **Marquer comme résolu** :
+
    ```bash
    git add le-fichier-avec-conflit.ts
    ```
@@ -79,11 +82,13 @@ git push origin develop
 ## 🚨 Commandes de secours si ça se passe mal
 
 ### Annuler le merge en cours
+
 ```bash
 git merge --abort
 ```
 
 ### Revenir en arrière après un merge
+
 ```bash
 # Voir l'historique des commits
 git log --oneline
@@ -93,6 +98,7 @@ git reset --hard HEAD~1
 ```
 
 ### Voir les différences avant de merger
+
 ```bash
 git checkout main
 git diff develop
@@ -113,6 +119,7 @@ git diff develop
 Si vous voulez être plus sûr et avoir une revue :
 
 1. **Pousser develop** :
+
    ```bash
    git checkout develop
    git push origin develop
@@ -127,3 +134,5 @@ Si vous voulez être plus sûr et avoir une revue :
    - Cliquer "Merge pull request"
 
 C'est plus sûr car GitHub montre tous les changements et conflits avant de merger !
+
+BRAVO VOUS AVEZ REUSSI !
