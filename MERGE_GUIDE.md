@@ -1,4 +1,4 @@
-# 🔀 Guide : Merger develop dans main
+# 🔀 Guide : Merger develop dans main via Pull Request
 
 ## Étape 1 : Vérifier l'état actuel
 
@@ -10,78 +10,58 @@ git branch
 git status
 ```
 
-## Étape 2 : Nettoyer les fichiers non suivis (IMPORTANT avant merge)
+## Étape 2 : Sauvegarder les fichiers non commités
 
 ```bash
-# Nettoyer les fichiers ignorés et non trackés
-git clean -fd
-
-# Si vous avez des fichiers modifiés à garder, les commit d'abord
+# Commiter vos changements sur develop
+git checkout develop
 git add .
 git commit -m "WIP: Save current work"
+
+# Nettoyer les fichiers non trackés restants (build, cache, etc.)
+git clean -fd
 ```
 
-## Étape 2 : Nettoyer les fichiers non suivis (IMPORTANT avant merge)
-
-## Étape 3 : Se positionner sur main
+## Étape 3 : Pousser develop sur GitHub
 
 ```bash
-# Aller sur la branche main
-git checkout main
-
-# Mettre à jour main avec le remote (si vous avez pushé avant)
-git pull origin main
-```
-
-## Étape 4 : Merger develop dans main
-
-```bash
-# Merger develop dans main
-git merge develop
-```
-
-### Si vous avez des conflits :
-
-Git vous dira quels fichiers ont des conflits. Pour chaque fichier :
-
-1. **Ouvrir le fichier** avec les conflits
-2. Chercher les marqueurs :
-   ```
-   <<<<<<< HEAD
-   Code de main
-   =======
-   Code de develop
-   >>>>>>> develop
-   ```
-3. **Choisir** quelle version garder (ou combiner les deux)
-4. **Supprimer** les marqueurs (`<<<<<<<`, `=======`, `>>>>>>>`)
-5. **Sauvegarder** le fichier
-
-6. **Marquer comme résolu** :
-
-   ```bash
-   git add le-fichier-avec-conflit.ts
-   ```
-
-7. **Finaliser le merge** :
-   ```bash
-   git commit -m "Merge develop into main"
-   ```
-
-## Étape 5 : Pousser sur GitHub
-
-```bash
-# Pousser main
-git push origin main
-
-# Optionnel : pousser develop aussi si vous avez fait des commits
-git checkout develop
 git push origin develop
 ```
 
+> C'est ce push qui rend vos changements visibles sur GitHub et permet de créer la Pull Request.
+
+## Étape 4 : Créer la Pull Request sur GitHub.com
+
+1. Aller sur votre repo GitHub
+2. GitHub affiche une bannière **"Compare & pull request"** → cliquer dessus
+   - Si la bannière n'apparaît pas : cliquer **"Pull requests"** → **"New pull request"**
+3. Vérifier : Base `main` ← Compare `develop`
+4. Donner un titre clair à votre PR
+5. Cliquer **"Create pull request"**
+
+## Étape 5 : Merger la Pull Request
+
+1. Vérifier les changements affichés par GitHub
+2. Cliquer **"Merge pull request"**
+3. Cliquer **"Confirm merge"**
+
+✅ La PR apparaît maintenant sur votre profil GitHub avec le carré violet 🟣
+
+## Étape 6 : Resynchroniser develop en local ⚠️
+
+> **C'est cette étape qui évite le message "This branch is X commits behind main".**
+
+```bash
+git checkout develop
+git pull origin main
+git push origin develop
+```
+
+---
+
 ## 🚨 Commandes de secours si ça se passe mal
 
-### Annuler le merge en cours
+### Annuler le merge en cours (en local)
 
 ```bash
 git merge --abort
@@ -93,7 +73,7 @@ git merge --abort
 # Voir l'historique des commits
 git log --oneline
 
-# Revenir au commit précédent (ATTENTION: perte des changements)
+# Revenir au commit précédent (ATTENTION : perte des changements non pushés)
 git reset --hard HEAD~1
 ```
 
@@ -104,35 +84,18 @@ git checkout main
 git diff develop
 ```
 
+---
+
 ## ✅ Checklist complète
 
-- [ ] `.gitignore` à jour (fait ✅)
-- [ ] Tous les changements de develop sont commitéss
-- [ ] Sur la branche main (`git checkout main`)
-- [ ] Merge effectué (`git merge develop`)
-- [ ] Conflits résolus (si présents)
-- [ ] Tests passent (vérifier que l'app fonctionne)
-- [ ] Push vers GitHub (`git push origin main`)
+- [ ] `.gitignore` à jour
+- [ ] Tous les changements de develop sont commités
+- [ ] develop pushée sur GitHub (`git push origin develop`)
+- [ ] Pull Request créée sur GitHub.com
+- [ ] Changements vérifiés dans la PR
+- [ ] PR mergée ("Merge pull request")
+- [ ] develop resynchronisée avec main (`git checkout develop && git pull origin main && git push origin develop`)
 
-## 💡 Alternative : Merge via GitHub Pull Request (RECOMMANDÉ)
+---
 
-Si vous voulez être plus sûr et avoir une revue :
-
-1. **Pousser develop** :
-
-   ```bash
-   git checkout develop
-   git push origin develop
-   ```
-
-2. **Sur GitHub.com** :
-   - Aller dans votre repo
-   - Cliquer "Pull requests" → "New pull request"
-   - Base: `main` ← Compare: `develop`
-   - Cliquer "Create pull request"
-   - Vérifier les changements
-   - Cliquer "Merge pull request"
-
-C'est plus sûr car GitHub montre tous les changements et conflits avant de merger !
-
-BRAVO VOUS AVEZ REUSSI !
+## 🎉 BRAVO VOUS AVEZ RÉUSSI !
