@@ -13,47 +13,85 @@
 ## 📋 État des Fonctionnalités
 
 ### ✅ Fonctionnalités Complètes
-*(à remplir au fur et à mesure)*
+
+#### Infrastructure & Config
+
+- ✅ Setup initial (Vite + React 19 + TypeScript + Tailwind CSS 4.x + PrimeReact)
+- ✅ Alias `@/` configurés (tsconfig + vite.config)
+- ✅ Dockerfile + nginx.conf + .dockerignore
+- ✅ vercel.json (déploiement)
+
+#### Authentification
+
+- ✅ `auth.service.ts` — register, login, logout, getMe, saveToken, getToken, loginWithGoogle
+- ✅ `api.service.ts` — apiFetch générique avec injection automatique du JWT
+- ✅ Stockage du JWT en localStorage (`access_token`)
+- ✅ Déconnexion avec nettoyage du token
+
+#### Contexte & Hooks
+
+- ✅ `AuthContext` — user, isLoading, isAdmin, login, logout
+- ✅ Hydratation au démarrage via `GET /auth/me`
+- ✅ `useAuth` — hook d'accès au contexte auth
+
+#### Guards & Routing
+
+- ✅ `App.tsx` — routing complet avec BrowserRouter
+- ✅ `<ProtectedRoute>` — redirige vers `/login` si non connecté
+- ✅ `<AdminRoute>` — redirige vers `/login` si non connecté, vers `/` si pas admin
+
+#### Pages — Logique
+
+- ✅ `Login` (`/login`) — formulaire fonctionnel, redirect selon rôle (admin → /admin, user → /dashboard)
+- ✅ `Register` (`/register`) — formulaire fonctionnel, redirect vers /dashboard
+- ✅ Bouton "Connexion avec Google" présent (attend le backend OAuth)
+
+#### Types
+
+- ✅ `user.types.ts` — `UserRole`, `User`, `AuthResponse`
 
 ### ⏳ En cours / À faire
 
-#### Authentification
-- [ ] Formulaire d'inscription (username + mot de passe)
-- [ ] Formulaire de connexion (username + mot de passe)
-- [ ] Bouton "Connexion avec Google" (Google OAuth)
-- [ ] Stockage du JWT (localStorage ou cookie httpOnly)
-- [ ] Déconnexion avec nettoyage du token
+#### Pages — Style / Contenu (logique OK, design à faire)
 
-#### Guards & Routing
-- [ ] `<ProtectedRoute>` — redirige vers `/login` si non connecté
-- [ ] `<AdminRoute>` — redirige vers `/` si connecté mais pas admin
+- ✅ `Home` (`/`) — squelette fonctionnel (affichage conditionnel connecté/non connecté)
+- ✅ `Login` (`/login`) — logique complète / ⏳ style à faire
+- ✅ `Register` (`/register`) — logique complète / ⏳ style à faire
+- ✅ `Dashboard` (`/dashboard`) — squelette fonctionnel (username + logout) / ⏳ style à faire
+- ✅ `Admin` (`/admin`) — squelette fonctionnel (username + logout) / ⏳ style à faire
 
-#### Pages
-- [ ] `Home` (`/`) — page publique
-- [ ] `Login` (`/login`) — connexion
-- [ ] `Register` (`/register`) — inscription
-- [ ] `Dashboard` (`/dashboard`) — espace utilisateur connecté
-- [ ] `Admin` (`/admin`) — espace admin uniquement
+#### Composants
 
-#### Contexte & Hooks
-- [ ] `AuthContext` — état global de l'utilisateur connecté
-- [ ] `useAuth` — hook pour accéder au contexte auth
+- [ ] `components/layout/` — Navbar, Footer
+- [ ] `components/ui/` — Button, Input, Modal...
+- [ ] `components/auth/` — GoogleButton stylisé
+
+#### Design System
+
+- [ ] Charte graphique (couleurs, typo)
+- [ ] Configuration PrimeReact PassThrough (actuellement `src/prime/index.tsx` vide)
+- [ ] Responsive (desktop-first, compatible mobile)
+
+#### Google OAuth
+
+- [ ] Gestion du callback OAuth côté frontend (réception du token en query param)
 
 ---
 
 ## 📦 Stack Technique
 
-| Outil | Version |
-|-------|---------|
-| Framework | React 19 |
-| Language | TypeScript |
-| Build Tool | Vite 5.x |
-| CSS Framework | Tailwind CSS 4.x |
-| Routing | React Router DOM |
-| UI Components | PrimeReact (PassThrough API) |
-| Auth | JWT + Google OAuth (via backend) |
-| Port dev | `5173` |
-| API URL | `http://localhost:3001` (`.env`) |
+| Outil           | Version                          |
+| --------------- | -------------------------------- |
+| Framework       | React 19                         |
+| Language        | TypeScript                       |
+| Build Tool      | Vite 5.x                         |
+| CSS Framework   | Tailwind CSS 4.x                 |
+| Routing         | React Router DOM                 |
+| UI Components   | PrimeReact (PassThrough API)     |
+| Package Manager | pnpm                             |
+| Auth            | JWT + Google OAuth (via backend) |
+| Port dev        | `5173`                           |
+| API URL         | `http://localhost:3001` (`.env`) |
 
 ---
 
@@ -62,143 +100,114 @@
 ```
 frontend/
 ├── src/
-│   ├── assets/                  # Images, fonts, icônes
-│   ├── components/
-│   │   ├── ui/                  # Composants réutilisables (Button, Input, Modal...)
-│   │   ├── layout/              # Navbar, Footer, Layout
-│   │   └── auth/                # LoginForm, RegisterForm, GoogleButton
 │   ├── context/
-│   │   └── AuthContext.tsx      # Contexte global auth (user, token, login, logout)
+│   │   └── AuthContext.tsx      # ✅ Contexte global auth
 │   ├── guards/
-│   │   ├── ProtectedRoute.tsx   # Redirige si non connecté
-│   │   └── AdminRoute.tsx       # Redirige si pas admin
+│   │   ├── ProtectedRoute.tsx   # ✅
+│   │   └── AdminRoute.tsx       # ✅
 │   ├── hooks/
-│   │   └── useAuth.ts           # Hook d'accès au contexte auth
+│   │   └── useAuth.ts           # ✅
 │   ├── pages/
-│   │   ├── Home/                # Page publique
-│   │   ├── Login/               # Connexion
-│   │   ├── Register/            # Inscription
-│   │   ├── Dashboard/           # Espace utilisateur connecté
-│   │   └── Admin/               # Espace admin (protégé)
+│   │   ├── Home/index.tsx       # ✅ squelette fonctionnel
+│   │   ├── Login/index.tsx      # ✅ logique / ⏳ style
+│   │   ├── Register/index.tsx   # ✅ logique / ⏳ style
+│   │   ├── Dashboard/index.tsx  # ✅ squelette fonctionnel / ⏳ style
+│   │   └── Admin/index.tsx      # ✅ squelette fonctionnel / ⏳ style
+│   ├── prime/
+│   │   └── index.tsx            # ⏳ customTheme vide
 │   ├── services/
-│   │   ├── api.service.ts       # Client HTTP de base (fetch avec JWT)
-│   │   └── auth.service.ts      # login(), register(), googleLogin(), logout()
-│   ├── types/                   # Types TypeScript partagés
-│   │   └── user.types.ts        # User, AuthResponse, Role...
-│   ├── utils/                   # Fonctions utilitaires
-│   ├── App.tsx                  # Routes principales
-│   ├── main.tsx                 # Entrée app + PrimeReactProvider
-│   └── index.css                # Tailwind + variables CSS
-├── public/
-├── index.html
-├── vite.config.ts
-├── tsconfig.app.json
-└── package.json
+│   │   ├── api.service.ts       # ✅
+│   │   └── auth.service.ts      # ✅
+│   ├── types/
+│   │   └── user.types.ts        # ✅
+│   ├── App.tsx                  # ✅
+│   ├── main.tsx                 # ✅
+│   └── index.css                # ⏳ thème Tailwind à définir
+└── ...
 ```
 
 ---
 
 ## 🔐 Système d'Authentification (Frontend)
 
-### Flux de connexion classique
+### Flux de connexion classique ✅
+
 ```
 Login form → auth.service.login() → POST /auth/login
-           → JWT reçu → stocké (localStorage)
-           → AuthContext mis à jour
-           → Redirect selon rôle (user → /dashboard, admin → /admin)
+           → JWT reçu → localStorage.setItem('access_token')
+           → AuthContext mis à jour (login())
+           → Redirect : admin → /admin, user → /dashboard
 ```
 
-### Flux Google OAuth
+### Flux Google OAuth ⏳ (bouton prêt, callback à implémenter)
+
 ```
-Clic "Connexion Google" → redirect vers /auth/google (backend)
-                        → Google callback → JWT renvoyé par backend
-                        → Stockage JWT → AuthContext mis à jour
-                        → Redirect selon rôle
+Clic "Connexion Google" → window.location.href = /auth/google
+                        → Google callback → JWT renvoyé par backend en query param
+                        → Page /auth/callback → saveToken() → AuthContext → redirect
 ```
 
-### Persistance de session
+### Persistance de session ✅
+
 ```
-Au démarrage de l'app → lecture du JWT en localStorage
-                      → GET /auth/me avec le token
-                      → Hydratation de AuthContext si token valide
-                      → Sinon : nettoyage et redirect /login
+App mount → getToken() → GET /auth/me
+          → setUser() si valide
+          → authService.logout() si invalide
 ```
 
 ---
 
 ## 🧩 Services
 
-### `auth.service.ts`
+### `auth.service.ts` ✅
 
 ```typescript
-// Inscription
-register(username: string, password: string): Promise<AuthResponse>
-
-// Connexion
-login(username: string, password: string): Promise<AuthResponse>
-
-// Déconnexion
-logout(): void  // Nettoie le token local
-
-// Récupérer l'utilisateur connecté
+register(username, password): Promise<AuthResponse>
+login(username, password): Promise<AuthResponse>
+logout(): void
 getMe(): Promise<User>
+getToken(): string | null
+saveToken(token: string): void
+loginWithGoogle(): void  // window.location.href = VITE_API_URL/auth/google
 ```
 
-### `api.service.ts`
-
-Client HTTP de base qui injecte automatiquement le JWT dans les headers :
+### `api.service.ts` ✅
 
 ```typescript
-// Requête authentifiée
-apiFetch(endpoint: string, options?: RequestInit): Promise<Response>
-// Ajoute automatiquement : Authorization: Bearer <token>
+apiFetch<T>(endpoint, options?): Promise<T>
+// Injecte automatiquement : Authorization: Bearer <token>
 ```
 
 ---
 
-## 🧭 Routing
+## 🧭 Routing ✅
 
 ```tsx
-// App.tsx
 <Routes>
-  {/* Pages publiques */}
   <Route path="/" element={<Home />} />
   <Route path="/login" element={<Login />} />
   <Route path="/register" element={<Register />} />
-
-  {/* Pages protégées (user connecté) */}
   <Route element={<ProtectedRoute />}>
     <Route path="/dashboard" element={<Dashboard />} />
   </Route>
-
-  {/* Pages admin uniquement */}
   <Route element={<AdminRoute />}>
     <Route path="/admin" element={<Admin />} />
   </Route>
 </Routes>
 ```
 
-### Guards
-
-**`ProtectedRoute.tsx`** : vérifie que l'utilisateur est connecté (token valide), sinon redirige vers `/login`.
-
-**`AdminRoute.tsx`** : vérifie que l'utilisateur est connecté **et** a le rôle `admin`, sinon redirige vers `/`.
-
 ---
 
-## 🗂️ Types Partagés
+## 🗂️ Types Partagés ✅
 
 ```typescript
-// types/user.types.ts
-
-export type Role = 'user' | 'admin';
+export type UserRole = "user" | "admin";
 
 export interface User {
   id: string;
-  username: string;
-  email?: string;
-  role: Role;
-  googleId?: string;
+  username: string | null;
+  email: string | null;
+  role: UserRole;
   createdAt: string;
 }
 
@@ -213,58 +222,49 @@ export interface AuthResponse {
 ## 🎨 Charte Graphique
 
 ### Design System
+
 - **Style** : À définir (minimaliste recommandé pour un portfolio)
 - **Mode** : À définir (light / dark / système)
-- **Public** : Général
 
-### Palette de Couleurs
-*(à définir lors du setup du projet)*
+### Palette de Couleurs ⏳
+
+_(à définir — modifier `src/index.css`)_
 
 ```css
-/* src/index.css — à compléter */
 @import "tailwindcss";
 
 @theme {
-  /* Brand Colors — à définir */
   --color-primary: ;
   --color-primary-light: ;
   --color-primary-dark: ;
-
-  /* Backgrounds — à définir */
   --color-bg-primary: ;
   --color-bg-secondary: ;
-
-  /* Text — à définir */
   --color-text-primary: ;
   --color-text-secondary: ;
   --color-text-muted: ;
-
-  /* States */
   --color-success: ;
   --color-error: ;
   --color-warning: ;
 }
 ```
 
-### Typographie
-*(à définir — éviter Inter/Roboto, choisir une typo distincte)*
+### Typographie ⏳
+
+_(à définir — éviter Inter/Roboto)_
 
 ---
 
 ## 🎨 Configuration PrimeReact (PassThrough API)
 
-Le projet utilise **PrimeReact avec Tailwind CSS** via l'API **PassThrough** pour un contrôle total du styling.
-
 ### Architecture
 
 ```
-src/
-└── prime/
-    ├── index.tsx                # Export du customTheme
-    └── components/
-        ├── inputText.ts         # Style InputText
-        ├── button.ts            # Style Button
-        └── ...
+src/prime/
+├── index.tsx                # Export customTheme (actuellement vide)
+└── components/              # À créer
+    ├── inputText.ts
+    ├── button.ts
+    └── ...
 ```
 
 ### Setup dans `main.tsx`
@@ -282,44 +282,11 @@ const CustomTailwind = usePassThrough(Tailwind, customTheme, {
 
 <PrimeReactProvider value={CustomTailwind}>
   <App />
-</PrimeReactProvider>
-```
-
-### Exemple de composant customisé
-
-```typescript
-// src/prime/components/inputText.ts
-import type { InputTextPassThroughOptions } from "primereact/inputtext";
-import { classNames } from "primereact/utils";
-
-export const inputtext: InputTextPassThroughOptions = {
-  root: ({ props, context }) => ({
-    className: classNames(
-      "rounded-lg border transition-colors duration-200 p-3 text-base",
-      {
-        "hover:border-primary focus:outline-none": !context.disabled,
-        "opacity-60 pointer-events-none": context.disabled,
-        "border-error": props.invalid,
-        "border-gray-300": !props.invalid,
-      }
-    ),
-  }),
-};
-```
-
-### Ajouter un composant
-
-1. Créer `src/prime/components/button.ts`
-2. L'importer dans `src/prime/index.tsx` :
-
-```tsx
-import { inputtext } from "./components/inputText";
-import { button } from "./components/button";
-
-export const customTheme = { inputtext, button };
+</PrimeReactProvider>;
 ```
 
 ### Ressources
+
 - [Documentation PassThrough API](https://primereact.org/passthrough/)
 - [Tailwind PassThrough Base](https://github.com/primefaces/primereact/blob/master/components/lib/passthrough/tailwind/index.js)
 
@@ -327,83 +294,65 @@ export const customTheme = { inputtext, button };
 
 ## 🗃️ Gestion d'État
 
-### AuthContext
-
-Stocke l'état global de l'utilisateur connecté :
+### AuthContext ✅
 
 ```typescript
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
+  isAdmin: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
-  isAdmin: boolean;
 }
 ```
 
+> Note : `token` n'est pas exposé dans le contexte — il est lu directement via `authService.getToken()` dans `apiFetch`.
+
 ### LocalStorage
 
-| Clé | Valeur |
-|-----|--------|
+| Clé            | Valeur                     |
+| -------------- | -------------------------- |
 | `access_token` | JWT renvoyé par le backend |
-
-> Note : si tu passes à des cookies httpOnly, supprimer cette clé et gérer côté backend.
 
 ---
 
 ## 🎯 Conventions Spécifiques
 
-### Composants
-- Un dossier par composant complexe : `ComponentName/index.tsx`
-- Composants simples : fichier unique `ComponentName.tsx`
-- Props typées avec interface
-
 ### Imports
-- **Utiliser les alias `@/`** pour tous les imports internes
-- Exemple : `import { useAuth } from '@/hooks/useAuth';`
-- Configuration `tsconfig.app.json` : `"@/*": ["./src/*"]`
-- Configuration Vite : `alias: { '@': path.resolve(__dirname, './src') }`
 
-### Hooks
-- Préfixe `use` : `useAuth`, `useUser`
-- Un fichier par hook
+- Alias `@/` pour tous les imports internes
+- `tsconfig.app.json` : `"@/*": ["./src/*"]`
 
-### Services
-- Classes ou fonctions pour encapsuler la logique externe
-- `auth.service.ts` pour toute la logique d'authentification
-- `api.service.ts` pour les appels HTTP génériques
+### Composants
+
+- Dossier par page : `PageName/index.tsx`
+- Composants simples : `ComponentName.tsx`
 
 ---
 
 ## 🚀 Commandes
 
 ```bash
-# Développement
-npm run dev
-
-# Build production
-npm run build
-
-# Preview build
-npm run preview
-
-# Lint
-npm run lint
+pnpm dev
+pnpm build
+pnpm preview
+pnpm lint
 ```
 
 ---
 
 ## 📝 TODO / Roadmap Frontend
 
-- [ ] Setup initial (Vite + React + TypeScript + Tailwind + PrimeReact)
-- [ ] Configurer les alias `@/` (tsconfig + vite.config)
-- [ ] Créer `AuthContext` + `useAuth`
-- [ ] Implémenter `auth.service.ts` + `api.service.ts`
-- [ ] Créer les guards `ProtectedRoute` + `AdminRoute`
-- [ ] Pages : Home, Login, Register
-- [ ] Pages : Dashboard, Admin
-- [ ] Intégrer le bouton Google OAuth
+- [x] Setup initial (Vite + React + TypeScript + Tailwind + PrimeReact)
+- [x] Alias `@/` (tsconfig + vite.config)
+- [x] `AuthContext` + `useAuth`
+- [x] `auth.service.ts` + `api.service.ts`
+- [x] Guards `ProtectedRoute` + `AdminRoute`
+- [x] Pages Login + Register (logique)
+- [ ] Gestion callback Google OAuth (`/auth/callback`)
 - [ ] Définir la charte graphique (couleurs, typo)
-- [ ] Créer les composants UI de base (Button, Input, Modal)
-- [ ] Responsive (desktop-first, compatible mobile)
+- [ ] Styler Login + Register avec Tailwind + PrimeReact
+- [ ] Créer composants UI de base (Button, Input...)
+- [x] Pages Home, Dashboard, Admin (squelettes fonctionnels — style à faire)
+- [ ] Navbar + Footer
+- [ ] Responsive

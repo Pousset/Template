@@ -21,30 +21,46 @@
 
 ### ✅ Fonctionnalités Complètes
 
-_(à remplir au fur et à mesure)_
+#### Auth
+
+- ✅ Inscription classique (`POST /auth/register`) — publique, hash bcrypt, retourne JWT
+- ✅ Connexion classique (`POST /auth/login`) — publique, retourne JWT
+- ✅ Stratégie JWT (`passport-jwt`) + `JwtAuthGuard`
+- ✅ Endpoint `GET /auth/me` — retourne l'utilisateur connecté (JWT requis)
+
+#### User
+
+- ✅ Entité `User` avec rôle (`user` | `admin`)
+- ✅ `UserService` — CRUD utilisateurs
+
+#### Admin
+
+- ✅ `RolesGuard` + `@Roles('admin')` — protège les routes admin
+- ✅ `GET /admin/dashboard` — protégé JWT + Admin
+- ✅ `GET /admin/users` — liste tous les utilisateurs (JWT + Admin)
+- ✅ `PATCH /admin/users/:id/role` — modifie le rôle d'un utilisateur (JWT + Admin)
 
 ### ⏳ En cours / À faire
 
 #### Auth
 
-- [ ] Inscription classique (username + mot de passe hashé)
-- [ ] Connexion classique → JWT
-- [ ] Stratégie JWT (`passport-jwt`)
 - [ ] Google OAuth 2.0 (`passport-google-oauth20`)
-- [ ] `JwtAuthGuard` — protège les routes
-- [ ] `RolesGuard` + `@Roles('admin')` — protège les routes admin
-- [ ] Endpoint `GET /auth/me` — récupère l'utilisateur connecté
+  - [ ] `GoogleStrategy`
+  - [ ] `GET /auth/google` → redirect
+  - [ ] `GET /auth/google/callback` → upsert user + JWT + redirect frontend
 
-#### User
+---
 
-- [ ] Entité `User` avec rôle (`user` | `admin`)
-- [ ] `UserService` — CRUD utilisateurs
-- [ ] Plusieurs comptes admin possibles
+## 🔐 Routes & Protection
 
-#### Admin
-
-- [ ] `AdminController` — routes exclusives admin
-- [ ] `AdminService` — logique admin (liste users, attribution rôle...)
+| Route                   | Méthode | Protection  | Description            |
+| ----------------------- | ------- | ----------- | ---------------------- |
+| `/auth/register`        | POST    | Publique    | Inscription classique  |
+| `/auth/login`           | POST    | Publique    | Connexion classique    |
+| `/auth/me`              | GET     | JWT         | Utilisateur connecté   |
+| `/admin/dashboard`      | GET     | JWT + Admin | Dashboard admin        |
+| `/admin/users`          | GET     | JWT + Admin | Liste des utilisateurs |
+| `/admin/users/:id/role` | PATCH   | JWT + Admin | Modification de rôle   |
 
 ---
 
@@ -57,28 +73,27 @@ backend/
 │   │   ├── auth/
 │   │   │   ├── strategies/
 │   │   │   │   ├── jwt.strategy.ts          # Validation du JWT
-│   │   │   │   └── google.strategy.ts       # OAuth Google
+│   │   │   │   └── google.strategy.ts       # OAuth Google (à venir)
 │   │   │   ├── guards/
-│   │   │   │   ├── jwt-auth.guard.ts        # Protège les routes auth
-│   │   │   │   └── roles.guard.ts           # Protège les routes admin
+│   │   │   │   ├── jwt-auth.guard.ts        # Protège les routes auth ✅
+│   │   │   │   └── roles.guard.ts           # Protège les routes admin ✅
 │   │   │   ├── decorators/
-│   │   │   │   └── roles.decorator.ts       # @Roles('admin')
+│   │   │   │   └── roles.decorator.ts       # @Roles('admin') ✅
 │   │   │   ├── dto/
-│   │   │   │   ├── register.dto.ts
-│   │   │   │   └── login.dto.ts
-│   │   │   ├── auth.controller.ts           # /auth/register, /auth/login, /auth/google
-│   │   │   ├── auth.service.ts              # Logique login/register/JWT
-│   │   │   └── auth.module.ts
+│   │   │   │   ├── register.dto.ts          # ✅
+│   │   │   │   └── login.dto.ts             # ✅
+│   │   │   ├── auth.controller.ts           # /auth/register, /auth/login, /auth/me ✅
+│   │   │   ├── auth.service.ts              # Logique login/register/JWT ✅
+│   │   │   └── auth.module.ts               # ✅
 │   │   ├── user/
 │   │   │   ├── entities/
-│   │   │   │   └── user.entity.ts           # Entité TypeORM
-│   │   │   ├── user.controller.ts           # /users (admin only)
-│   │   │   ├── user.service.ts              # CRUD utilisateurs
-│   │   │   └── user.module.ts
+│   │   │   │   └── user.entity.ts           # Entité TypeORM ✅
+│   │   │   ├── user.service.ts              # CRUD utilisateurs ✅
+│   │   │   └── user.module.ts               # ✅
 │   │   └── admin/
-│   │       ├── admin.controller.ts          # /admin/* (admin only)
-│   │       ├── admin.service.ts
-│   │       └── admin.module.ts
+│   │       ├── admin.controller.ts          # /admin/* ✅
+│   │       ├── admin.service.ts             # ✅
+│   │       └── admin.module.ts              # ✅
 │   ├── config/
 │   │   └── database.config.ts               # Config TypeORM
 │   ├── database/
@@ -87,9 +102,9 @@ backend/
 │   │   └── run-migrations.ts
 │   ├── app.module.ts
 │   └── main.ts
-├── .env                                     # Variables d'environnement
-├── .env.example                             # Template
-├── app.sqlite                               # BDD SQLite (dev)
+├── .env
+├── .env.example
+├── app.sqlite
 └── package.json
 ```
 
@@ -163,7 +178,7 @@ POST /auth/login { username, password }
 → Renvoyer { accessToken, user }
 ```
 
-### Flux Google OAuth
+### Flux Google OAuth _(à implémenter)_
 
 ```
 GET /auth/google                         → Redirect vers Google
@@ -189,7 +204,7 @@ interface JwtPayload {
 
 ### Auth
 
-#### `POST /auth/register`
+#### `POST /auth/register` ✅
 
 **Body** :
 
@@ -206,7 +221,7 @@ interface JwtPayload {
 }
 ```
 
-#### `POST /auth/login`
+#### `POST /auth/login` ✅
 
 **Body** :
 
@@ -223,59 +238,48 @@ interface JwtPayload {
 }
 ```
 
-#### `GET /auth/me` 🔒 _(JWT requis)_
+#### `GET /auth/me` 🔒 ✅
 
 **Response** : Objet `User` sans `passwordHash`
 
-#### `GET /auth/google`
+#### `GET /auth/google` _(à implémenter)_
 
 Redirige vers Google OAuth.
 
-#### `GET /auth/google/callback`
+#### `GET /auth/google/callback` _(à implémenter)_
 
 Callback Google → génère JWT → redirige vers frontend.
 
 ---
 
-### Users _(admin only)_
-
-#### `GET /users` 🔒🛡️
-
-Liste tous les utilisateurs.
-
-#### `PATCH /users/:id/role` 🔒🛡️
-
-**Body** : `{ "role": "user" | "admin" }`  
-Attribue ou révoque le rôle admin.
-
----
-
-### Admin
+### Admin ✅
 
 #### `GET /admin/dashboard` 🔒🛡️
 
-Données réservées à l'interface admin. _(À compléter selon les besoins)_
+#### `GET /admin/users` 🔒🛡️
+
+Liste tous les utilisateurs.
+
+#### `PATCH /admin/users/:id/role` 🔒🛡️
+
+**Body** : `{ "role": "user" | "admin" }`
 
 ---
 
 ## 🛡️ Guards & Décorateurs
 
-### `JwtAuthGuard`
+### `JwtAuthGuard` ✅
 
-Vérifie la présence et la validité du JWT dans le header `Authorization: Bearer <token>`.  
-→ Appliqué sur toutes les routes protégées.
+Vérifie la présence et la validité du JWT dans le header `Authorization: Bearer <token>`.
 
-### `RolesGuard`
+### `RolesGuard` ✅
 
 Vérifie que l'utilisateur a le rôle requis.  
 → Toujours combiné avec `JwtAuthGuard`.
 
-### `@Roles('admin')`
-
-Décorateur custom pour marquer une route comme réservée aux admins.
+### `@Roles('admin')` ✅
 
 ```typescript
-// Utilisation dans un controller
 @Get('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
@@ -323,8 +327,6 @@ NODE_ENV=development
 
 # Base de données
 DATABASE_PATH=app.sqlite
-# Pour PostgreSQL en prod :
-# DATABASE_URL=postgresql://user:password@localhost:5432/portfolio
 
 # JWT
 JWT_SECRET=your_super_secret_key_change_in_production
@@ -336,14 +338,14 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
 ```
 
-### TypeORM Config (`src/app.module.ts`)
+### TypeORM Config
 
 ```typescript
 TypeOrmModule.forRoot({
   type: 'sqlite',
   database: process.env.DATABASE_PATH || 'app.sqlite',
   entities: [User],
-  synchronize: true, // ⚠️ false en production — utiliser les migrations
+  synchronize: true, // ⚠️ false en production
   logging: false,
 });
 ```
@@ -353,21 +355,10 @@ TypeOrmModule.forRoot({
 ## 🚀 Commandes
 
 ```bash
-# Développement
 npm run start:dev
-
-# Build
 npm run build
-
-# Production
 npm run start:prod
-
-# Tests
 npm run test
-npm run test:e2e
-npm run test:cov
-
-# Migrations TypeORM
 npm run migration:generate -- src/database/migrations/NomMigration
 npm run migration:run
 npm run migration:revert
@@ -375,75 +366,16 @@ npm run migration:revert
 
 ---
 
-## 📦 Dépendances à Installer
-
-```bash
-# Auth JWT
-npm install @nestjs/jwt @nestjs/passport passport passport-jwt
-npm install @types/passport-jwt --save-dev
-
-# Google OAuth
-npm install passport-google-oauth20
-npm install @types/passport-google-oauth20 --save-dev
-
-# Bcrypt
-npm install bcrypt
-npm install @types/bcrypt --save-dev
-
-# Validation
-npm install class-validator class-transformer
-
-# Config
-npm install @nestjs/config
-
-# TypeORM + drivers
-npm install @nestjs/typeorm typeorm better-sqlite3 pg
-npm install @types/better-sqlite3 --save-dev
-```
-
----
-
-## 🎯 Conventions Spécifiques NestJS
-
-### Imports
-
-- **Utiliser les alias `@/`** pour tous les imports internes
-- Exemple : `import { User } from '@/modules/user/entities/user.entity';`
-- Configuration dans `tsconfig.json` : `"@/*": ["src/*"]`
-
-### Modules
-
-- Un module par domaine fonctionnel (`auth`, `user`, `admin`)
-- Exports explicites des services partagés entre modules
-
-### Services
-
-- Toute la logique métier dans les services
-- Controllers minimalistes (valider DTO → appeler service → retourner résultat)
-
-### Erreurs
-
-- Utiliser les exceptions NestJS : `NotFoundException`, `UnauthorizedException`, `BadRequestException`, `ForbiddenException`
-- Ne jamais exposer les détails internes dans les messages d'erreur
-
-### Sécurité
-
-- Ne jamais retourner `passwordHash` dans les réponses (utiliser `select: false` sur la colonne)
-- Valider tous les inputs avec les DTOs et class-validator
-- Vérifier l'appartenance des ressources avant modification
-
----
-
 ## 📝 TODO / Roadmap Backend
 
-- [ ] Installer les dépendances auth
-- [ ] Créer l'entité `User`
-- [ ] Implémenter `AuthService` (register, login, JWT)
-- [ ] Implémenter `JwtStrategy` + `JwtAuthGuard`
+- [x] Installer les dépendances auth
+- [x] Créer l'entité `User`
+- [x] Implémenter `AuthService` (register, login, JWT)
+- [x] Implémenter `JwtStrategy` + `JwtAuthGuard`
+- [x] Implémenter `RolesGuard` + `@Roles()`
+- [x] Créer `AdminController` + `AdminService` (dashboard, users, patch role)
+- [x] Configurer les variables d'environnement
 - [ ] Implémenter Google OAuth (`GoogleStrategy`)
-- [ ] Implémenter `RolesGuard` + `@Roles()`
-- [ ] Créer `AdminController` + `AdminService`
-- [ ] Configurer les variables d'environnement
-- [ ] Migrations TypeORM pour la production
 - [ ] Tests unitaires `AuthService`
+- [ ] Migrations TypeORM pour la production
 - [ ] Migration PostgreSQL (prod)
