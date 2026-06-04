@@ -201,7 +201,7 @@ apiFetch<T>(endpoint, options?): Promise<T>
 ## 🗂️ Types Partagés ✅
 
 ```typescript
-export type UserRole = "user" | "admin";
+export type UserRole = 'user' | 'admin';
 
 export interface User {
   id: string;
@@ -231,7 +231,7 @@ export interface AuthResponse {
 _(à définir — modifier `src/index.css`)_
 
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-primary: ;
@@ -270,10 +270,10 @@ src/prime/
 ### Setup dans `main.tsx`
 
 ```tsx
-import { PrimeReactProvider } from "primereact/api";
-import { usePassThrough } from "primereact/passthrough";
-import Tailwind from "primereact/passthrough/tailwind";
-import { customTheme } from "@/prime";
+import { PrimeReactProvider } from 'primereact/api';
+import { usePassThrough } from 'primereact/passthrough';
+import Tailwind from 'primereact/passthrough/tailwind';
+import { customTheme } from '@/prime';
 
 const CustomTailwind = usePassThrough(Tailwind, customTheme, {
   mergeSections: true,
@@ -354,5 +354,5 @@ pnpm lint
 - [ ] Styler Login + Register avec Tailwind + PrimeReact
 - [ ] Créer composants UI de base (Button, Input...)
 - [x] Pages Home, Dashboard, Admin (squelettes fonctionnels — style à faire)
-- [ ] Navbar + Footer
+- [x] Navbar + Footer
 - [ ] Responsive
