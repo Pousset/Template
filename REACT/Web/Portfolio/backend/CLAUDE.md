@@ -12,7 +12,7 @@
 - **Port** : `3001` (configuré dans `.env`)
 - **CORS** : `http://localhost:5173`
 
-**Version Actuelle** : 0.1.0  
+**Version Actuelle** : 0.2.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -39,6 +39,15 @@
 - ✅ `GET /admin/dashboard` — protégé JWT + Admin
 - ✅ `GET /admin/users` — liste tous les utilisateurs (JWT + Admin)
 - ✅ `PATCH /admin/users/:id/role` — modifie le rôle d'un utilisateur (JWT + Admin)
+
+#### Seed
+
+- ✅ `SeedService` (`src/database/seed.service.ts`) — crée le compte admin au démarrage
+  - Déclenché via `onApplicationBootstrap`
+  - Credentials lus depuis `ADMIN_USERNAME` + `ADMIN_PASSWORD` (variables d'env)
+  - Ignoré silencieusement si le compte existe déjà (idempotent)
+  - Log NestJS si création effective, warning si variables absentes
+- ✅ `SeedModule` (`src/database/seed.module.ts`) — enregistré dans `AppModule`
 
 ### ⏳ En cours / À faire
 
@@ -98,6 +107,8 @@ backend/
 │   │   └── database.config.ts               # Config TypeORM
 │   ├── database/
 │   │   ├── data-source.ts
+│   │   ├── seed.service.ts              # ✅ Seed admin au démarrage
+│   │   ├── seed.module.ts               # ✅
 │   │   ├── migrations/
 │   │   └── run-migrations.ts
 │   ├── app.module.ts
@@ -336,6 +347,10 @@ JWT_EXPIRES_IN=7d
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
+
+# Seed admin initial (laisser vide pour désactiver)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change_me_in_production
 ```
 
 ### TypeORM Config
@@ -354,6 +369,8 @@ TypeOrmModule.forRoot({
 
 ## 🚀 Commandes
 
+### Depuis `backend/`
+
 ```bash
 npm run start:dev
 npm run build
@@ -362,6 +379,13 @@ npm run test
 npm run migration:generate -- src/database/migrations/NomMigration
 npm run migration:run
 npm run migration:revert
+```
+
+### Depuis la racine `Portfolio/`
+
+```bash
+npm run dev:backend      # démarre NestJS seul
+npm run dev              # démarre backend + frontend en parallèle (concurrently)
 ```
 
 ---
@@ -375,6 +399,7 @@ npm run migration:revert
 - [x] Implémenter `RolesGuard` + `@Roles()`
 - [x] Créer `AdminController` + `AdminService` (dashboard, users, patch role)
 - [x] Configurer les variables d'environnement
+- [x] `SeedService` + `SeedModule` — création admin au démarrage via variables d'env
 - [ ] Implémenter Google OAuth (`GoogleStrategy`)
 - [ ] Tests unitaires `AuthService`
 - [ ] Migrations TypeORM pour la production

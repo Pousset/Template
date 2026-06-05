@@ -5,6 +5,7 @@ import { getDatabaseConfig } from '@/config/database.config';
 import { UserModule } from '@/modules/user/user.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { AdminModule } from '@/modules/admin/admin.module';
+import { SeedModule } from './database/seed.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AdminModule } from '@/modules/admin/admin.module';
     UserModule,
     AuthModule,
     AdminModule,
+    SeedModule,
   ],
 })
 export class AppModule {}

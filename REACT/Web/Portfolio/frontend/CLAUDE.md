@@ -5,7 +5,7 @@
 **Nom** : Portfolio App  
 **Concept** : Site web avec authentification (username ou Google OAuth), espace utilisateur connecté, et espace admin protégé.
 
-**Version Actuelle** : 0.1.0  
+**Version Actuelle** : 0.2.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -52,24 +52,26 @@
 
 ### ⏳ En cours / À faire
 
-#### Pages — Style / Contenu (logique OK, design à faire)
+#### Pages — UI complète ✅
 
-- ✅ `Home` (`/`) — squelette fonctionnel (affichage conditionnel connecté/non connecté)
-- ✅ `Login` (`/login`) — logique complète / ⏳ style à faire
-- ✅ `Register` (`/register`) — logique complète / ⏳ style à faire
-- ✅ `Dashboard` (`/dashboard`) — squelette fonctionnel (username + logout) / ⏳ style à faire
-- ✅ `Admin` (`/admin`) — squelette fonctionnel (username + logout) / ⏳ style à faire
+- ✅ `Home` (`/`) — UI complète (affichage conditionnel connecté/non connecté)
+- ✅ `Login` (`/login`) — logique + style complets
+- ✅ `Register` (`/register`) — logique + style complets
+- ✅ `Dashboard` (`/dashboard`) — UI complète
+- ✅ `Admin` (`/admin`) — UI complète
 
 #### Composants
 
-- [ ] `components/layout/` — Navbar, Footer
+- ✅ `components/layout/Navbar.tsx`
+- ✅ `components/layout/Footer.tsx`
+- ✅ `components/layout/Layout.tsx`
 - [ ] `components/ui/` — Button, Input, Modal...
 - [ ] `components/auth/` — GoogleButton stylisé
 
 #### Design System
 
-- [ ] Charte graphique (couleurs, typo)
-- [ ] Configuration PrimeReact PassThrough (actuellement `src/prime/index.tsx` vide)
+- [ ] Charte graphique (couleurs, typo) — à documenter
+- [ ] Configuration PrimeReact PassThrough (`src/prime/index.tsx` — à compléter)
 - [ ] Responsive (desktop-first, compatible mobile)
 
 #### Google OAuth
@@ -100,31 +102,37 @@
 ```
 frontend/
 ├── src/
+│   ├── components/
+│   │   └── layout/
+│   │       ├── Footer.tsx          # ✅
+│   │       ├── Layout.tsx          # ✅
+│   │       └── Navbar.tsx          # ✅
 │   ├── context/
-│   │   └── AuthContext.tsx      # ✅ Contexte global auth
+│   │   └── AuthContext.tsx         # ✅ Contexte global auth
 │   ├── guards/
-│   │   ├── ProtectedRoute.tsx   # ✅
-│   │   └── AdminRoute.tsx       # ✅
+│   │   ├── ProtectedRoute.tsx      # ✅
+│   │   └── AdminRoute.tsx          # ✅
 │   ├── hooks/
-│   │   └── useAuth.ts           # ✅
+│   │   └── useAuth.ts              # ✅
 │   ├── pages/
-│   │   ├── Home/index.tsx       # ✅ squelette fonctionnel
-│   │   ├── Login/index.tsx      # ✅ logique / ⏳ style
-│   │   ├── Register/index.tsx   # ✅ logique / ⏳ style
-│   │   ├── Dashboard/index.tsx  # ✅ squelette fonctionnel / ⏳ style
-│   │   └── Admin/index.tsx      # ✅ squelette fonctionnel / ⏳ style
-│   ├── prime/
-│   │   └── index.tsx            # ⏳ customTheme vide
+│   │   ├── Home/index.tsx          # ✅ UI complète
+│   │   ├── Login/index.tsx         # ✅ UI complète
+│   │   ├── Register/index.tsx      # ✅ UI complète
+│   │   ├── Dashboard/index.tsx     # ✅ UI complète
+│   │   └── Admin/index.tsx         # ✅ UI complète
 │   ├── services/
-│   │   ├── api.service.ts       # ✅
-│   │   └── auth.service.ts      # ✅
+│   │   ├── api.service.ts          # ✅
+│   │   └── auth.service.ts         # ✅
 │   ├── types/
-│   │   └── user.types.ts        # ✅
-│   ├── App.tsx                  # ✅
-│   ├── main.tsx                 # ✅
-│   └── index.css                # ⏳ thème Tailwind à définir
+│   │   └── user.types.ts           # ✅
+│   ├── App.tsx                     # ✅
+│   ├── main.tsx                    # ✅
+│   ├── index.css                   # ⏳ thème Tailwind à définir
+│   └── vite-env.d.ts               # ✅
 └── ...
 ```
+
+> Note : `src/prime/` supprimé de la structure active (non présent dans le projet). À recréer si la customisation PrimeReact PassThrough est reprise.
 
 ---
 
@@ -348,11 +356,12 @@ pnpm lint
 - [x] `AuthContext` + `useAuth`
 - [x] `auth.service.ts` + `api.service.ts`
 - [x] Guards `ProtectedRoute` + `AdminRoute`
-- [x] Pages Login + Register (logique)
+- [x] Pages Login + Register (logique + UI)
+- [x] Pages Home, Dashboard, Admin (UI complète)
+- [x] Navbar + Footer + Layout
 - [ ] Gestion callback Google OAuth (`/auth/callback`)
-- [ ] Définir la charte graphique (couleurs, typo)
-- [ ] Styler Login + Register avec Tailwind + PrimeReact
+- [ ] Définir la charte graphique (couleurs, typo) dans `index.css`
 - [ ] Créer composants UI de base (Button, Input...)
-- [x] Pages Home, Dashboard, Admin (squelettes fonctionnels — style à faire)
-- [x] Navbar + Footer
+- [ ] GoogleButton stylisé (`components/auth/`)
+- [ ] Configuration PrimeReact PassThrough (`src/prime/`)
 - [ ] Responsive
