@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { Avatar } from '@/components/shared/Avatar';
+import { Badge, Button } from '@/components/ui';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -9,8 +11,6 @@ export default function Dashboard() {
     logout();
     navigate('/');
   };
-
-  const initials = user?.username ? user.username.slice(0, 2).toUpperCase() : '??';
 
   const joinDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString('fr-FR', {
@@ -29,25 +29,20 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-text-primary">Dashboard</h1>
             <p className="text-text-muted text-sm mt-1">Bienvenue, {user?.username} 👋</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="text-sm px-4 py-2 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-text-muted transition-colors"
-          >
+          <Button variant="secondary" onClick={handleLogout}>
             Déconnexion
-          </button>
+          </Button>
         </div>
 
         {/* Avatar + identité */}
         <div className="rounded-2xl border border-border bg-bg-secondary p-5 flex items-center gap-5 shrink-0">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-xl font-bold text-white shrink-0">
-            {initials}
-          </div>
+          <Avatar username={user?.username} size="lg" />
           <div>
             <p className="text-xl font-semibold text-text-primary">{user?.username}</p>
             <p className="text-sm text-text-muted">{user?.email ?? 'Aucun email renseigné'}</p>
-            <span className="inline-block mt-1.5 text-xs px-2.5 py-0.5 rounded-full bg-primary/20 text-primary-light border border-primary/30">
+            <Badge variant="primary" className="mt-1.5">
               {user?.role}
-            </span>
+            </Badge>
           </div>
         </div>
 

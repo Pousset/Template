@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { Button, Input, Badge, Card, Spinner } from '@/components/ui';
 
 export default function Home() {
   const { user } = useAuth();
@@ -27,7 +28,11 @@ export default function Home() {
         {/* Eyebrow */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-bg-card text-xs text-text-secondary tracking-widest uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          Portfolio personnel
+          Components :
+          <Spinner />
+          <Button>Bouton</Button>
+          <Card>Cards</Card>
+          <Badge>Badge</Badge>
         </div>
 
         {/* Title */}

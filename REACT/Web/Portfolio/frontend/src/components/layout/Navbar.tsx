@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-
 import { useAuth } from '@/hooks/useAuth';
+import { Avatar } from '@/components/shared/Avatar';
+import { Button } from '@/components/ui';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
@@ -11,34 +12,29 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const initials = user?.username ? user.username.slice(0, 2).toUpperCase() : '??';
-
   return (
-    <nav className="w-full border-b border-border bg-[var(--color-bg-secondary)]">
+    <nav className="w-full border-b border-border bg-bg-secondary">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link
           to="/"
-          className="text-lg font-bold tracking-tight text-[var(--color-text-primary)] hover:text-[var(--color-primary)] transition-colors"
+          className="text-lg font-bold tracking-tight text-text-primary hover:text-primary transition-colors"
         >
           TEMPLATE SITE
         </Link>
 
         {/* Nav links */}
-        <div className="flex items-center gap-6 text-sm text-[var(--color-text-secondary)]">
-          <Link to="/" className="hover:text-[var(--color-text-primary)] transition-colors">
+        <div className="flex items-center gap-6 text-sm text-text-secondary">
+          <Link to="/" className="hover:text-text-primary transition-colors">
             Home
           </Link>
           {user && (
-            <Link to="/dashboard" className="hover:text-[var(--color-text-primary)] transition-colors">
+            <Link to="/dashboard" className="hover:text-text-primary transition-colors">
               Dashboard
             </Link>
           )}
           {isAdmin && (
-            <Link
-              to="/admin"
-              className="hover:text-[var(--color-primary-light)] transition-colors text-[var(--color-primary)]"
-            >
+            <Link to="/admin" className="text-primary hover:text-primary-light transition-colors">
               Admin
             </Link>
           )}
@@ -48,24 +44,18 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              {/* Avatar + username */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-xs font-semibold text-white">
-                  {initials}
-                </div>
-                <span className="text-sm text-[var(--color-text-secondary)]">{user.username}</span>
+                <Avatar username={user.username} size="sm" />
+                <span className="text-sm text-text-secondary">{user.username}</span>
               </div>
-              <button
-                onClick={handleLogout}
-                className="text-sm px-4 py-1.5 rounded-md border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-text-muted)] transition-all"
-              >
+              <Button variant="secondary" size="sm" onClick={handleLogout}>
                 Déconnexion
-              </button>
+              </Button>
             </>
           ) : (
             <Link
               to="/login"
-              className="text-sm px-4 py-1.5 rounded-md bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)] transition-colors"
+              className="text-sm px-4 py-1.5 rounded-md bg-primary text-white hover:bg-primary-dark transition-colors"
             >
               Connexion
             </Link>
