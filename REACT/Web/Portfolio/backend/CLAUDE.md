@@ -12,7 +12,7 @@
 - **Port** : `3001` (configuré dans `.env`)
 - **CORS** : `http://localhost:5173`
 
-**Version Actuelle** : 0.3.0  
+**Version Actuelle** : 0.4.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -47,6 +47,9 @@
   - Credentials lus depuis `ADMIN_USERNAME` + `ADMIN_PASSWORD` (variables d'env)
   - Ignoré silencieusement si le compte existe déjà (idempotent)
   - Log NestJS si création effective, warning si variables absentes
+- ✅ Promotion d'un compte Google en admin via `ADMIN_GOOGLE_EMAIL` (variable d'env)
+  - Idempotent — ignoré si déjà admin
+  - Warning si le compte n'est pas encore en base (pas encore connecté via Google)
 - ✅ `SeedModule` (`src/database/seed.module.ts`) — enregistré dans `AppModule`
 
 #### Google OAuth
@@ -56,6 +59,15 @@
   - ✅ `GoogleAuthGuard`
   - ✅ `GET /auth/google` → redirect vers Google
   - ✅ `GET /auth/google/callback` → upsert user + JWT + redirect frontend (`/auth/callback?token=...`)
+
+#### Tests
+
+- ✅ Tests unitaires — 39 tests, 5 suites, tous passants
+  - `user.service.spec.ts` — CRUD utilisateurs (findById, create, updateRole, linkGoogleId...)
+  - `auth.service.spec.ts` — register, login, Google OAuth (conflits, mauvais mot de passe, création compte...)
+  - `auth.controller.spec.ts` — délégation AuthService, redirect Google callback
+  - `admin.spec.ts` — AdminService + AdminController (routes protégées, updateRole...)
+  - `seed.service.spec.ts` — seed admin + promotion Google (idempotence, variables manquantes...)
 
 ---
 
@@ -93,7 +105,7 @@ backend/
 │   │   │   ├── dto/
 │   │   │   │   ├── register.dto.ts          # ✅
 │   │   │   │   └── login.dto.ts             # ✅
-│   │   │   ├── auth.controller.ts           # /auth/* ✅ (register, login, me, google, google/callback)
+│   │   │   ├── auth.controller.ts           # /auth/* ✅
 │   │   │   ├── auth.service.ts              # Logique login/register/JWT ✅
 │   │   │   └── auth.module.ts               # ✅
 │   │   ├── user/
@@ -109,15 +121,21 @@ backend/
 │   │   └── database.config.ts               # Config TypeORM
 │   ├── database/
 │   │   ├── data-source.ts
-│   │   ├── seed.service.ts              # ✅ Seed admin au démarrage
+│   │   ├── seed.service.ts              # ✅ Seed admin + promotion Google au démarrage
 │   │   ├── seed.module.ts               # ✅
 │   │   ├── migrations/
 │   │   └── run-migrations.ts
 │   ├── app.module.ts
 │   └── main.ts
+├── test/
+│   ├── user.service.spec.ts             # ✅
+│   ├── auth.service.spec.ts             # ✅
+│   ├── auth.controller.spec.ts          # ✅
+│   ├── admin.spec.ts                    # ✅
+│   └── seed.service.spec.ts             # ✅
 ├── .env
 ├── .env.example
-├── app.sqlite
+├── app.sqlite                           # ⚠️ gitignore — ne pas committer
 └── package.json
 ```
 
@@ -359,6 +377,9 @@ GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
 # Seed admin initial (laisser vide pour désactiver)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=change_me_in_production
+
+# Promotion d'un compte Google en admin (laisser vide pour désactiver)
+ADMIN_GOOGLE_EMAIL=ton.email@gmail.com
 ```
 
 ### TypeORM Config
@@ -384,6 +405,7 @@ npm run start:dev
 npm run build
 npm run start:prod
 npm run test
+npm run test:cov
 npm run migration:generate -- src/database/migrations/NomMigration
 npm run migration:run
 npm run migration:revert
@@ -408,7 +430,8 @@ npm run dev              # démarre backend + frontend en parallèle (concurrent
 - [x] Créer `AdminController` + `AdminService` (dashboard, users, patch role)
 - [x] Configurer les variables d'environnement
 - [x] `SeedService` + `SeedModule` — création admin au démarrage via variables d'env
+- [x] Promotion compte Google en admin via `ADMIN_GOOGLE_EMAIL`
 - [x] Implémenter Google OAuth (`GoogleStrategy` + `GoogleAuthGuard` + routes callback)
-- [ ] Tests unitaires `AuthService`
+- [x] Tests unitaires (39 tests — auth, admin, user, seed)
 - [ ] Migrations TypeORM pour la production
 - [ ] Migration PostgreSQL (prod)

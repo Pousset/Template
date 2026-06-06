@@ -362,8 +362,8 @@ pnpm lint
 - [x] Pages Home, Dashboard, Admin (UI complète)
 - [x] Navbar + Footer + Layout
 - [x] Gestion callback Google OAuth (`/auth/callback`)
+- [x] Créer composants UI de base (Button, Input...)
+- [x] GoogleButton stylisé (`components/auth/`)
+- [x] Responsive
 - [ ] Définir la charte graphique (couleurs, typo) dans `index.css`
-- [ ] Créer composants UI de base (Button, Input...)
-- [ ] GoogleButton stylisé (`components/auth/`)
 - [ ] Configuration PrimeReact PassThrough (`src/prime/`)
-- [ ] Responsive
