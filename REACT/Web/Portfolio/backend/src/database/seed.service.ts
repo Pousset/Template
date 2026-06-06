@@ -15,6 +15,7 @@ export class SeedService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap(): Promise<void> {
     await this.seedAdmin();
+    await this.promoteGoogleAdmin();
   }
 
   private async seedAdmin(): Promise<void> {
@@ -33,7 +34,6 @@ export class SeedService implements OnApplicationBootstrap {
     });
 
     if (existing) {
-      // Ignorer silencieusement si l'admin existe déjà
       return;
     }
 
@@ -47,5 +47,23 @@ export class SeedService implements OnApplicationBootstrap {
 
     await this.userRepository.save(admin);
     this.logger.log(`Compte admin "${username}" créé avec succès.`);
+  }
+
+  private async promoteGoogleAdmin(): Promise<void> {
+    const email = process.env.ADMIN_GOOGLE_EMAIL;
+    if (!email) return;
+
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      this.logger.warn(
+        `ADMIN_GOOGLE_EMAIL défini mais aucun compte trouvé pour "${email}" — sera promu au prochain démarrage après sa première connexion.`,
+      );
+      return;
+    }
+
+    if (user.role === 'admin') return;
+
+    await this.userRepository.update(user.id, { role: 'admin' });
+    this.logger.log(`Compte Google "${email}" promu admin.`);
   }
 }
