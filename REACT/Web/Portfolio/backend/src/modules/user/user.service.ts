@@ -35,6 +35,13 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async linkGoogleId(id: string, googleId: string): Promise<User> {
+    await this.userRepository.update(id, { googleId });
+    const user = await this.findById(id);
+    if (!user) throw new Error(`User ${id} not found after linkGoogleId`);
+    return user;
+  }
+
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }

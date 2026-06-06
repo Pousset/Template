@@ -5,7 +5,7 @@
 **Nom** : Portfolio App  
 **Concept** : Site web avec authentification (username ou Google OAuth), espace utilisateur connecté, et espace admin protégé.
 
-**Version Actuelle** : 0.2.0  
+**Version Actuelle** : 0.3.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -76,7 +76,7 @@
 
 #### Google OAuth
 
-- [ ] Gestion du callback OAuth côté frontend (réception du token en query param)
+- ✅ `AuthCallback` (`/auth/callback`) — lit le token en query param, appelle `getMe()`, redirige vers `/dashboard` ou `/login`
 
 ---
 
@@ -119,7 +119,8 @@ frontend/
 │   │   ├── Login/index.tsx         # ✅ UI complète
 │   │   ├── Register/index.tsx      # ✅ UI complète
 │   │   ├── Dashboard/index.tsx     # ✅ UI complète
-│   │   └── Admin/index.tsx         # ✅ UI complète
+│   │   ├── Admin/index.tsx         # ✅ UI complète
+│   │   └── AuthCallback/index.tsx  # ✅ Callback Google OAuth
 │   ├── services/
 │   │   ├── api.service.ts          # ✅
 │   │   └── auth.service.ts         # ✅
@@ -147,12 +148,12 @@ Login form → auth.service.login() → POST /auth/login
            → Redirect : admin → /admin, user → /dashboard
 ```
 
-### Flux Google OAuth ⏳ (bouton prêt, callback à implémenter)
+### Flux Google OAuth ✅
 
 ```
 Clic "Connexion Google" → window.location.href = /auth/google
                         → Google callback → JWT renvoyé par backend en query param
-                        → Page /auth/callback → saveToken() → AuthContext → redirect
+                        → Page /auth/callback → saveToken() → getMe() → redirect /dashboard
 ```
 
 ### Persistance de session ✅
@@ -195,6 +196,7 @@ apiFetch<T>(endpoint, options?): Promise<T>
   <Route path="/" element={<Home />} />
   <Route path="/login" element={<Login />} />
   <Route path="/register" element={<Register />} />
+  <Route path="/auth/callback" element={<AuthCallback />} />
   <Route element={<ProtectedRoute />}>
     <Route path="/dashboard" element={<Dashboard />} />
   </Route>
@@ -359,7 +361,7 @@ pnpm lint
 - [x] Pages Login + Register (logique + UI)
 - [x] Pages Home, Dashboard, Admin (UI complète)
 - [x] Navbar + Footer + Layout
-- [ ] Gestion callback Google OAuth (`/auth/callback`)
+- [x] Gestion callback Google OAuth (`/auth/callback`)
 - [ ] Définir la charte graphique (couleurs, typo) dans `index.css`
 - [ ] Créer composants UI de base (Button, Input...)
 - [ ] GoogleButton stylisé (`components/auth/`)

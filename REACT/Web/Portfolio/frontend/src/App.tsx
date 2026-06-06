@@ -1,13 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
-import { ProtectedRoute } from "@/guards/ProtectedRoute";
-import { AdminRoute } from "@/guards/AdminRoute";
-import Layout from "@/components/layout/Layout";
-import Home from "@/pages/Home";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
-import Admin from "@/pages/Admin";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from '@/context/AuthContext';
+import { ProtectedRoute } from '@/guards/ProtectedRoute';
+import { AdminRoute } from '@/guards/AdminRoute';
+import Layout from '@/components/layout/Layout';
+import Home from '@/pages/Home';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import Dashboard from '@/pages/Dashboard';
+import Admin from '@/pages/Admin';
+import AuthCallback from '@/pages/AuthCallback';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
             {/* Pages protégées — utilisateur connecté */}
             <Route element={<ProtectedRoute />}>

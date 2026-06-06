@@ -12,7 +12,7 @@
 - **Port** : `3001` (configuré dans `.env`)
 - **CORS** : `http://localhost:5173`
 
-**Version Actuelle** : 0.2.0  
+**Version Actuelle** : 0.3.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -49,27 +49,28 @@
   - Log NestJS si création effective, warning si variables absentes
 - ✅ `SeedModule` (`src/database/seed.module.ts`) — enregistré dans `AppModule`
 
-### ⏳ En cours / À faire
+#### Google OAuth
 
-#### Auth
-
-- [ ] Google OAuth 2.0 (`passport-google-oauth20`)
-  - [ ] `GoogleStrategy`
-  - [ ] `GET /auth/google` → redirect
-  - [ ] `GET /auth/google/callback` → upsert user + JWT + redirect frontend
+- ✅ Google OAuth 2.0 (`passport-google-oauth20`)
+  - ✅ `GoogleStrategy` — upsert user via `googleId` + `email`, émet JWT
+  - ✅ `GoogleAuthGuard`
+  - ✅ `GET /auth/google` → redirect vers Google
+  - ✅ `GET /auth/google/callback` → upsert user + JWT + redirect frontend (`/auth/callback?token=...`)
 
 ---
 
 ## 🔐 Routes & Protection
 
-| Route                   | Méthode | Protection  | Description            |
-| ----------------------- | ------- | ----------- | ---------------------- |
-| `/auth/register`        | POST    | Publique    | Inscription classique  |
-| `/auth/login`           | POST    | Publique    | Connexion classique    |
-| `/auth/me`              | GET     | JWT         | Utilisateur connecté   |
-| `/admin/dashboard`      | GET     | JWT + Admin | Dashboard admin        |
-| `/admin/users`          | GET     | JWT + Admin | Liste des utilisateurs |
-| `/admin/users/:id/role` | PATCH   | JWT + Admin | Modification de rôle   |
+| Route                   | Méthode | Protection  | Description                               |
+| ----------------------- | ------- | ----------- | ----------------------------------------- |
+| `/auth/register`        | POST    | Publique    | Inscription classique                     |
+| `/auth/login`           | POST    | Publique    | Connexion classique                       |
+| `/auth/me`              | GET     | JWT         | Utilisateur connecté                      |
+| `/auth/google`          | GET     | Publique    | Redirect vers Google OAuth                |
+| `/auth/google/callback` | GET     | Publique    | Callback Google → JWT → redirect frontend |
+| `/admin/dashboard`      | GET     | JWT + Admin | Dashboard admin                           |
+| `/admin/users`          | GET     | JWT + Admin | Liste des utilisateurs                    |
+| `/admin/users/:id/role` | PATCH   | JWT + Admin | Modification de rôle                      |
 
 ---
 
@@ -81,17 +82,18 @@ backend/
 │   ├── modules/
 │   │   ├── auth/
 │   │   │   ├── strategies/
-│   │   │   │   ├── jwt.strategy.ts          # Validation du JWT
-│   │   │   │   └── google.strategy.ts       # OAuth Google (à venir)
+│   │   │   │   ├── jwt.strategy.ts          # Validation du JWT ✅
+│   │   │   │   └── google.strategy.ts       # OAuth Google ✅
 │   │   │   ├── guards/
 │   │   │   │   ├── jwt-auth.guard.ts        # Protège les routes auth ✅
+│   │   │   │   ├── google-auth.guard.ts     # Protège les routes Google OAuth ✅
 │   │   │   │   └── roles.guard.ts           # Protège les routes admin ✅
 │   │   │   ├── decorators/
 │   │   │   │   └── roles.decorator.ts       # @Roles('admin') ✅
 │   │   │   ├── dto/
 │   │   │   │   ├── register.dto.ts          # ✅
 │   │   │   │   └── login.dto.ts             # ✅
-│   │   │   ├── auth.controller.ts           # /auth/register, /auth/login, /auth/me ✅
+│   │   │   ├── auth.controller.ts           # /auth/* ✅ (register, login, me, google, google/callback)
 │   │   │   ├── auth.service.ts              # Logique login/register/JWT ✅
 │   │   │   └── auth.module.ts               # ✅
 │   │   ├── user/
@@ -189,15 +191,17 @@ POST /auth/login { username, password }
 → Renvoyer { accessToken, user }
 ```
 
-### Flux Google OAuth _(à implémenter)_
+### Flux Google OAuth ✅
 
 ```
 GET /auth/google                         → Redirect vers Google
 GET /auth/google/callback                → Google rappelle ici
-→ Upsert User (googleId + email)
+→ Upsert User (googleId + email + displayName)
 → Générer JWT
-→ Redirect frontend avec token en query param
+→ Redirect frontend : ${FRONTEND_URL}/auth/callback?token=<jwt>
 ```
+
+**Piège `.env` :** `GOOGLE_CALLBACK_URL` doit être seul sur sa ligne — aucun paramètre parasite (`flowName=...`) ne doit y être accolé.
 
 ### JWT Payload
 
@@ -253,13 +257,13 @@ interface JwtPayload {
 
 **Response** : Objet `User` sans `passwordHash`
 
-#### `GET /auth/google` _(à implémenter)_
+#### `GET /auth/google` ✅
 
-Redirige vers Google OAuth.
+Redirige vers Google OAuth. Déclenché par `GoogleAuthGuard`.
 
-#### `GET /auth/google/callback` _(à implémenter)_
+#### `GET /auth/google/callback` ✅
 
-Callback Google → génère JWT → redirige vers frontend.
+Callback Google → upsert user → génère JWT → redirige vers `${FRONTEND_URL}/auth/callback?token=<jwt>`.
 
 ---
 
@@ -278,6 +282,10 @@ Liste tous les utilisateurs.
 ---
 
 ## 🛡️ Guards & Décorateurs
+
+### `GoogleAuthGuard` ✅
+
+Lance le flux OAuth Google via Passport. Utilisé sur `GET /auth/google` et `GET /auth/google/callback`.
 
 ### `JwtAuthGuard` ✅
 
@@ -400,7 +408,7 @@ npm run dev              # démarre backend + frontend en parallèle (concurrent
 - [x] Créer `AdminController` + `AdminService` (dashboard, users, patch role)
 - [x] Configurer les variables d'environnement
 - [x] `SeedService` + `SeedModule` — création admin au démarrage via variables d'env
-- [ ] Implémenter Google OAuth (`GoogleStrategy`)
+- [x] Implémenter Google OAuth (`GoogleStrategy` + `GoogleAuthGuard` + routes callback)
 - [ ] Tests unitaires `AuthService`
 - [ ] Migrations TypeORM pour la production
 - [ ] Migration PostgreSQL (prod)

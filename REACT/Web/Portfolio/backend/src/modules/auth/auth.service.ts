@@ -47,6 +47,42 @@ export class AuthService {
     return this.buildAuthResponse(user);
   }
 
+  async findOrCreateGoogleUser(profile: {
+    googleId: string;
+    email: string | null;
+    displayName: string;
+  }): Promise<User> {
+    // 1. Compte Google déjà existant
+    const byGoogleId = await this.userService.findByGoogleId(profile.googleId);
+    if (byGoogleId) return byGoogleId;
+
+    // 2. Email correspond à un compte classique → lier le googleId
+    if (profile.email) {
+      const byEmail = await this.userService.findByEmail(profile.email);
+      if (byEmail) {
+        return this.userService.linkGoogleId(byEmail.id, profile.googleId);
+      }
+    }
+
+    // 3. Créer un nouveau compte Google
+    return this.userService.create({
+      googleId: profile.googleId,
+      email: profile.email,
+      username: profile.displayName,
+      passwordHash: null,
+      role: 'user',
+    });
+  }
+
+  loginWithGoogle(user: User): { accessToken: string } {
+    const payload = {
+      sub: user.id,
+      username: user.username ?? user.email ?? 'user',
+      role: user.role,
+    };
+    return { accessToken: this.jwtService.sign(payload) };
+  }
+
   private buildAuthResponse(user: User): {
     accessToken: string;
     user: Partial<User>;

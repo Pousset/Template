@@ -4,3 +4,11 @@
   "npm.scriptExplorerAction": "run",
   "explorer.fileNesting.enabled": true
 }
+
+{
+  "npm.autoDetect": "on",
+  "npm.packageManager": "pnpm",
+  "npm.scriptExplorerAction": "run",
+  "explorer.fileNesting.enabled": true,
+  "npm.runSilent": false
+}
