@@ -11,28 +11,31 @@ Portfolio/
 ├── frontend/                  # React 19 + TypeScript + Vite
 │   ├── src/
 │   │   ├── services/          # api.service.ts, auth.service.ts
-│   │   ├── hooks/             # useAuth.ts, useUser.ts
-│   │   ├── pages/
-│   │   │   ├── Home.tsx       # Page publique (visiteurs)
-│   │   │   ├── Login.tsx      # Connexion (username ou Google)
-│   │   │   ├── Register.tsx   # Inscription
-│   │   │   ├── Dashboard.tsx  # Espace connecté (user + admin)
-│   │   │   └── Admin.tsx      # Espace admin uniquement
-│   │   ├── components/
-│   │   │   ├── layout/        # Navbar, Footer
-│   │   │   ├── auth/          # LoginForm, RegisterForm, GoogleButton
-│   │   │   └── ui/            # Composants réutilisables
+│   │   ├── hooks/             # useAuth.ts
+│   │   ├── context/           # AuthContext.tsx
 │   │   ├── guards/            # ProtectedRoute.tsx, AdminRoute.tsx
-│   │   └── context/           # AuthContext.tsx
+│   │   ├── types/             # user.types.ts
+│   │   ├── pages/
+│   │   │   ├── Home/          # Page publique (visiteurs)
+│   │   │   ├── Login/         # Connexion (username ou Google)
+│   │   │   ├── Register/      # Inscription
+│   │   │   ├── Dashboard/     # Espace connecté (user + admin)
+│   │   │   ├── Admin/         # Espace admin uniquement
+│   │   │   └── AuthCallback/  # Callback Google OAuth
+│   │   └── components/
+│   │       └── layout/        # Navbar, Footer, Layout
 │   ├── .env                   # VITE_API_URL=http://localhost:3001
 │   └── CLAUDE.md
 ├── backend/                   # NestJS 11 + TypeScript
-│   ├── src/modules/
-│   │   ├── auth/              # Connexion, inscription, JWT, Google OAuth
-│   │   ├── user/              # UserService, UserController, entités
-│   │   └── admin/             # AdminController, AdminService
-│   ├── .env                   # PORT=3001, FRONTEND_URL, JWT_SECRET, GOOGLE_CLIENT_ID...
-│   ├── app.sqlite             # Base de données SQLite (dev)
+│   ├── src/
+│   │   ├── modules/
+│   │   │   ├── auth/          # Connexion, inscription, JWT, Google OAuth
+│   │   │   ├── user/          # UserService, entités
+│   │   │   └── admin/         # AdminController, AdminService
+│   │   └── database/          # SeedService, migrations
+│   ├── test/                  # 5 suites de tests unitaires (39 tests)
+│   ├── .env                   # PORT, JWT_SECRET, GOOGLE_CLIENT_ID...
+│   ├── app.sqlite             # Base de données SQLite (dev, gitignore)
 │   └── CLAUDE.md
 ├── docker-compose.yml
 └── CLAUDE.md                  # Ce fichier
@@ -65,14 +68,14 @@ Portfolio/
 | `user`  | Connecté (username ou Google) | Pages publiques + fonctionnalités connecté |
 | `admin` | Administrateur                | Tout + page Admin exclusive                |
 
-> Plusieurs comptes peuvent avoir le statut `admin`. Le statut s'attribue manuellement en base de données ou via l'interface admin.
+> Plusieurs comptes peuvent avoir le statut `admin`. Le statut s'attribue via `PATCH /admin/users/:id/role` ou automatiquement au démarrage via `ADMIN_GOOGLE_EMAIL` dans le `.env`.
 
 ### Flux d'authentification
 
 1. **Inscription** : formulaire → validation → hash mdp → création compte `user` en BDD
 2. **Connexion classique** : username + mdp → vérification → JWT renvoyé
 3. **Connexion Google** : redirect OAuth → callback → upsert user en BDD → JWT renvoyé
-4. **Session** : JWT stocké côté client (localStorage ou cookie httpOnly) → envoyé dans les headers à chaque requête
+4. **Session** : JWT stocké en localStorage (`access_token`) → envoyé dans les headers à chaque requête
 5. **Guards** : le backend vérifie le JWT et le rôle sur chaque route protégée
 
 ## 📁 Structure des Données
@@ -80,20 +83,19 @@ Portfolio/
 ### User
 
 - `id` : UUID
-- `username` : String (unique)
+- `username` : String (unique, nullable si compte Google sans username)
 - `email` : String (unique, nullable pour inscription classique)
 - `passwordHash` : String (nullable si connexion Google)
 - `googleId` : String (nullable si inscription classique)
 - `role` : `'user'` | `'admin'` (défaut : `'user'`)
-- `createdAt` : Timestamp
-- `updatedAt` : Timestamp
+- `createdAt` / `updatedAt` : Timestamp
 
 ## 🔐 Protection des Routes
 
 ### Frontend (React Guards)
 
 - `<ProtectedRoute>` : redirige vers `/login` si non connecté
-- `<AdminRoute>` : redirige vers `/` si connecté mais pas admin
+- `<AdminRoute>` : redirige vers `/login` si non connecté, vers `/` si pas admin
 
 ### Backend (NestJS Guards)
 
@@ -104,21 +106,35 @@ Portfolio/
 
 ## 📊 État de l'Implémentation
 
-### ✅ Fonctionnalités Complétées
+### ✅ Backend — Complété
 
-_(à remplir au fur et à mesure)_
+- Auth classique (register, login, JWT)
+- Google OAuth (GoogleStrategy, GoogleAuthGuard, callback)
+- Entité `User` avec rôles
+- Routes admin protégées (dashboard, users, patch role)
+- SeedService — création admin + promotion compte Google via `.env`
+- Tests unitaires — 39 tests, 5 suites
 
-### 🔄 En Cours / À Compléter
+### ✅ Frontend — Complété
 
-- ⏳ Setup initial du projet (frontend + backend)
-- ⏳ Système d'inscription / connexion classique
-- ⏳ Intégration Google OAuth
-- ⏳ Gestion des rôles (user / admin)
-- ⏳ Page Admin protégée
-- ⏳ Fonctionnalités utilisateur connecté (à définir)
-- ⏳ Configuration Docker
-- ⏳ CI/CD GitHub Actions
-- ⏳ Migration PostgreSQL pour la production
+- Setup (Vite + React 19 + TypeScript + Tailwind 4.x + PrimeReact)
+- AuthContext + useAuth + ProtectedRoute + AdminRoute
+- auth.service.ts + api.service.ts
+- Pages : Home, Login, Register, Dashboard, Admin, AuthCallback
+- Navbar + Footer + Layout
+- Callback Google OAuth (`/auth/callback`)
+
+### 🔄 En Cours / À Faire
+
+- [ ] Charte graphique (couleurs, typo) dans `frontend/src/index.css`
+- [ ] Configuration PrimeReact PassThrough (`src/prime/`)
+- [ ] Composants UI de base (Button, Input, Modal...)
+- [ ] GoogleButton stylisé
+- [ ] Responsive
+- [ ] Configuration Docker
+- [ ] CI/CD GitHub Actions
+- [ ] Migrations TypeORM pour la production
+- [ ] Migration PostgreSQL (prod)
 
 ### 🔧 Ports de Configuration
 
@@ -200,22 +216,26 @@ _(à remplir au fur et à mesure)_
 
 ```bash
 # Frontend
-cd frontend && npm run dev
+cd frontend && pnpm dev
 
 # Backend
 cd backend && npm run start:dev
 
-# Les deux (Docker)
-docker-compose up
+# Les deux (depuis la racine)
+npm run dev
+```
+
+### Tests
+
+```bash
+cd backend && npm run test
+cd backend && npm run test:cov
 ```
 
 ### Base de données
 
 ```bash
-# Générer une migration TypeORM
 cd backend && npm run migration:generate -- src/migrations/NomMigration
-
-# Appliquer les migrations
 cd backend && npm run migration:run
 ```
 
@@ -223,12 +243,13 @@ cd backend && npm run migration:run
 
 ## 📝 TODO / Roadmap
 
-- [ ] Setup initial projet (frontend + backend)
-- [ ] Page Home + Navbar + Boutton Connexion
-- [ ] Authentification classique (username + mot de passe)
-- [ ] Authentification Google OAuth
-- [ ] Système de rôles (user / admin)
-- [ ] Page Admin protégée
+- [x] Setup initial projet (frontend + backend)
+- [x] Authentification classique (username + mot de passe)
+- [x] Authentification Google OAuth
+- [x] Système de rôles (user / admin)
+- [x] Page Admin protégée
+- [x] Tests unitaires backend
+- [ ] Charte graphique + composants UI
 - [ ] Définir les fonctionnalités utilisateur connecté
 - [ ] Configuration Docker
 - [ ] CI/CD GitHub Actions
