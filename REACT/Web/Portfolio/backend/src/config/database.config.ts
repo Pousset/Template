@@ -16,7 +16,10 @@ export const getDatabaseConfig = (
       logging: nodeEnv === 'development',
       migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
       migrationsRun: false,
-      ssl: { rejectUnauthorized: false },
+      ssl:
+        configService.get<string>('DB_SSL') === 'false'
+          ? false
+          : { rejectUnauthorized: false },
     };
   }
 

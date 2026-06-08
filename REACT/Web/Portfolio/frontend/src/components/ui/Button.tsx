@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { type ButtonHTMLAttributes, forwardRef } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -14,14 +14,12 @@ const base =
   'inline-flex items-center justify-center gap-2 font-medium rounded-lg border transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-primary border-primary text-white hover:bg-primary-dark hover:border-primary-dark active:scale-[0.98]',
+  primary: 'bg-primary border-primary text-white hover:bg-primary-dark hover:border-primary-dark active:scale-[0.98]',
   secondary:
     'bg-bg-card border-border text-text-primary hover:bg-bg-secondary hover:border-primary/40 active:scale-[0.98]',
   ghost:
     'bg-transparent border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-card active:scale-[0.98]',
-  danger:
-    'bg-transparent border-error/40 text-error hover:bg-error/10 active:scale-[0.98]',
+  danger: 'bg-transparent border-error/40 text-error hover:bg-error/10 active:scale-[0.98]',
 };
 
 const sizes: Record<Size, string> = {
@@ -48,13 +46,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
-        className={[
-          base,
-          variants[variant],
-          sizes[size],
-          fullWidth ? 'w-full' : '',
-          className,
-        ]
+        className={[base, variants[variant as Variant], sizes[size as Size], fullWidth ? 'w-full' : '', className]
           .filter(Boolean)
           .join(' ')}
         {...props}
@@ -68,19 +60,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
             <span>Chargement…</span>
           </>

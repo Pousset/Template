@@ -5,7 +5,7 @@
 **Nom** : Portfolio App  
 **Concept** : Site web avec authentification (username ou Google OAuth), espace utilisateur connecté, et espace admin protégé.
 
-**Version Actuelle** : 0.3.0  
+**Version Actuelle** : 0.4.0  
 **Dernière Mise à Jour** : Juin 2026
 
 ---
@@ -16,10 +16,12 @@
 
 #### Infrastructure & Config
 
-- ✅ Setup initial (Vite + React 19 + TypeScript + Tailwind CSS 4.x + PrimeReact)
+- ✅ Setup initial (Vite + React 19 + TypeScript + Tailwind CSS 4.x)
 - ✅ Alias `@/` configurés (tsconfig + vite.config)
-- ✅ Dockerfile + nginx.conf + .dockerignore
+- ✅ Dockerfile multi-stage (node:22-alpine builder + nginx:alpine production)
+- ✅ nginx.conf
 - ✅ vercel.json (déploiement)
+- ✅ Package manager : **npm**
 
 #### Authentification
 
@@ -31,8 +33,10 @@
 #### Contexte & Hooks
 
 - ✅ `AuthContext` — user, isLoading, isAdmin, login, logout
+- ✅ `ThemeContext` — dark/light mode, toggle, persistance
 - ✅ Hydratation au démarrage via `GET /auth/me`
 - ✅ `useAuth` — hook d'accès au contexte auth
+- ✅ `useTheme` — hook d'accès au contexte theme
 
 #### Guards & Routing
 
@@ -40,60 +44,59 @@
 - ✅ `<ProtectedRoute>` — redirige vers `/login` si non connecté
 - ✅ `<AdminRoute>` — redirige vers `/login` si non connecté, vers `/` si pas admin
 
-#### Pages — Logique
-
-- ✅ `Login` (`/login`) — formulaire fonctionnel, redirect selon rôle (admin → /admin, user → /dashboard)
-- ✅ `Register` (`/register`) — formulaire fonctionnel, redirect vers /dashboard
-- ✅ Bouton "Connexion avec Google" présent (attend le backend OAuth)
-
-#### Types
-
-- ✅ `user.types.ts` — `UserRole`, `User`, `AuthResponse`
-
-### ⏳ En cours / À faire
-
-#### Pages — UI complète ✅
+#### Pages
 
 - ✅ `Home` (`/`) — UI complète (affichage conditionnel connecté/non connecté)
 - ✅ `Login` (`/login`) — logique + style complets
 - ✅ `Register` (`/register`) — logique + style complets
 - ✅ `Dashboard` (`/dashboard`) — UI complète
 - ✅ `Admin` (`/admin`) — UI complète
+- ✅ `AuthCallback` (`/auth/callback`) — lit le token en query param, appelle `getMe()`, redirige
 
-#### Composants
+#### Composants UI (custom, pas PrimeReact)
 
-- ✅ `components/layout/Navbar.tsx`
-- ✅ `components/layout/Footer.tsx`
+- ✅ `components/ui/Button.tsx` — variants (primary, secondary, ghost, danger), sizes, isLoading, forwardRef
+- ✅ `components/ui/Input.tsx` — label, error, hint, leftIcon, rightIcon, forwardRef
+- ✅ `components/auth/AuthFormWrapper.tsx`
+- ✅ `components/auth/AuthDivider.tsx`
+- ✅ `components/auth/FormField.tsx`
+- ✅ `components/auth/GoogleSignInButton.tsx`
+- ✅ `components/shared/Avatar.tsx`
+- ✅ `components/shared/ErrorMessage.tsx`
+- ✅ `components/layout/Navbar.tsx` — liens conditionnels, theme toggle, avatar
+- ✅ `components/layout/Footer.tsx` — liens sociaux, copyright
 - ✅ `components/layout/Layout.tsx`
-- [ ] `components/ui/` — Button, Input, Modal...
-- [ ] `components/auth/` — GoogleButton stylisé
 
 #### Design System
 
-- [ ] Charte graphique (couleurs, typo) — à documenter
-- [ ] Configuration PrimeReact PassThrough (`src/prime/index.tsx` — à compléter)
-- [ ] Responsive (desktop-first, compatible mobile)
+- ✅ Charte graphique dans `src/index.css` — dark mode (défaut) + light mode
+- ✅ Polices : Inter (sans) + JetBrains Mono (mono)
+- ✅ CSS variables : text, bg, border, accent, success, error, warning
+- ✅ Dark/light mode via classe `.dark` sur `<html>`
 
-#### Google OAuth
+#### Types
 
-- ✅ `AuthCallback` (`/auth/callback`) — lit le token en query param, appelle `getMe()`, redirige vers `/dashboard` ou `/login`
+- ✅ `user.types.ts` — `UserRole`, `User`, `AuthResponse`
 
 ---
 
 ## 📦 Stack Technique
 
-| Outil           | Version                          |
-| --------------- | -------------------------------- |
-| Framework       | React 19                         |
-| Language        | TypeScript                       |
-| Build Tool      | Vite 5.x                         |
-| CSS Framework   | Tailwind CSS 4.x                 |
-| Routing         | React Router DOM                 |
-| UI Components   | PrimeReact (PassThrough API)     |
-| Package Manager | pnpm                             |
-| Auth            | JWT + Google OAuth (via backend) |
-| Port dev        | `5173`                           |
-| API URL         | `http://localhost:3001` (`.env`) |
+| Outil           | Version                                        |
+| --------------- | ---------------------------------------------- |
+| Framework       | React 19                                       |
+| Language        | TypeScript (strict + verbatimModuleSyntax)     |
+| Build Tool      | Vite 5.x                                       |
+| CSS Framework   | Tailwind CSS 4.x                               |
+| Routing         | React Router DOM                               |
+| UI Components   | Composants custom (pas PrimeReact PassThrough) |
+| Package Manager | npm                                            |
+| Auth            | JWT + Google OAuth (via backend)               |
+| Port dev        | `5173`                                         |
+| Port Docker     | `5173→80` (nginx)                              |
+| API URL         | `http://localhost:3001` (`.env`)               |
+
+> **Note PrimeReact** : La lib est installée mais le PassThrough n'est pas configuré. Décision suspendue — les composants UI sont custom pour garder le contrôle et la légèreté du bundle.
 
 ---
 
@@ -103,60 +106,101 @@
 frontend/
 ├── src/
 │   ├── components/
-│   │   └── layout/
-│   │       ├── Footer.tsx          # ✅
-│   │       ├── Layout.tsx          # ✅
-│   │       └── Navbar.tsx          # ✅
+│   │   ├── auth/
+│   │   │   ├── AuthDivider.tsx         # ✅
+│   │   │   ├── AuthFormWrapper.tsx     # ✅
+│   │   │   ├── FormField.tsx           # ✅
+│   │   │   └── GoogleSignInButton.tsx  # ✅
+│   │   ├── layout/
+│   │   │   ├── Footer.tsx              # ✅
+│   │   │   ├── Layout.tsx              # ✅
+│   │   │   └── Navbar.tsx              # ✅
+│   │   ├── shared/
+│   │   │   ├── Avatar.tsx              # ✅
+│   │   │   └── ErrorMessage.tsx        # ✅
+│   │   └── ui/
+│   │       ├── Button.tsx              # ✅
+│   │       └── Input.tsx               # ✅
 │   ├── context/
-│   │   └── AuthContext.tsx         # ✅ Contexte global auth
+│   │   ├── AuthContext.tsx             # ✅
+│   │   └── ThemeContext.tsx            # ✅
 │   ├── guards/
-│   │   ├── ProtectedRoute.tsx      # ✅
-│   │   └── AdminRoute.tsx          # ✅
+│   │   ├── AdminRoute.tsx              # ✅
+│   │   └── ProtectedRoute.tsx          # ✅
 │   ├── hooks/
-│   │   └── useAuth.ts              # ✅
+│   │   ├── useAuth.ts                  # ✅
+│   │   └── useTheme.ts                 # ✅ (via ThemeContext)
 │   ├── pages/
-│   │   ├── Home/index.tsx          # ✅ UI complète
-│   │   ├── Login/index.tsx         # ✅ UI complète
-│   │   ├── Register/index.tsx      # ✅ UI complète
-│   │   ├── Dashboard/index.tsx     # ✅ UI complète
-│   │   ├── Admin/index.tsx         # ✅ UI complète
-│   │   └── AuthCallback/index.tsx  # ✅ Callback Google OAuth
+│   │   ├── Admin/index.tsx             # ✅
+│   │   ├── AuthCallback/index.tsx      # ✅
+│   │   ├── Dashboard/index.tsx         # ✅
+│   │   ├── Home/index.tsx              # ✅
+│   │   ├── Login/index.tsx             # ✅
+│   │   └── Register/index.tsx          # ✅
 │   ├── services/
-│   │   ├── api.service.ts          # ✅
-│   │   └── auth.service.ts         # ✅
+│   │   ├── api.service.ts              # ✅
+│   │   └── auth.service.ts             # ✅
 │   ├── types/
-│   │   └── user.types.ts           # ✅
-│   ├── App.tsx                     # ✅
-│   ├── main.tsx                    # ✅
-│   ├── index.css                   # ⏳ thème Tailwind à définir
-│   └── vite-env.d.ts               # ✅
+│   │   └── user.types.ts               # ✅
+│   ├── App.tsx                         # ✅
+│   ├── main.tsx                        # ✅
+│   ├── index.css                       # ✅ Thème dark/light complet
+│   └── vite-env.d.ts                   # ✅
+├── Dockerfile                          # ✅ Multi-stage
+├── nginx.conf                          # ✅
 └── ...
 ```
 
-> Note : `src/prime/` supprimé de la structure active (non présent dans le projet). À recréer si la customisation PrimeReact PassThrough est reprise.
+---
+
+## 🎨 Design System
+
+### Polices
+
+- **Sans** : Inter (300, 400, 500)
+- **Mono** : JetBrains Mono (300, 400, 500) — utilisé pour `code`, `pre`, `kbd`, `.font-mono`
+
+### CSS Variables (Tailwind `@theme`)
+
+```css
+/* Dark mode (défaut — classe .dark sur <html>) */
+--color-text-primary / secondary / muted
+--color-bg-deep / primary / surface / elevated
+--color-border / border-subtle / border-strong
+--color-accent / accent-hover / accent-subtle / accent-border / accent-text / accent-muted
+--color-success / success-bg / success-border
+--color-error / error-bg / error-border
+--color-warning / warning-bg / warning-border
+```
+
+### Dark/Light Mode
+
+- Dark mode = défaut (classe `.dark` sur `<html>`)
+- Light mode = `:root:not(.dark)`
+- Toggle via `ThemeContext` → `toggleTheme()`
 
 ---
 
 ## 🔐 Système d'Authentification (Frontend)
 
-### Flux de connexion classique ✅
+### Flux connexion classique
 
 ```
 Login form → auth.service.login() → POST /auth/login
            → JWT reçu → localStorage.setItem('access_token')
-           → AuthContext mis à jour (login())
+           → AuthContext mis à jour
            → Redirect : admin → /admin, user → /dashboard
 ```
 
-### Flux Google OAuth ✅
+### Flux Google OAuth
 
 ```
-Clic "Connexion Google" → window.location.href = /auth/google
+Clic "Connexion Google" → window.location.href = VITE_API_URL/auth/google
                         → Google callback → JWT renvoyé par backend en query param
                         → Page /auth/callback → saveToken() → getMe() → redirect /dashboard
 ```
 
-### Persistance de session ✅
+### Persistance de session
 
 ```
 App mount → getToken() → GET /auth/me
@@ -166,9 +210,26 @@ App mount → getToken() → GET /auth/me
 
 ---
 
+## ⚠️ Conventions TypeScript Importantes
+
+- `verbatimModuleSyntax` activé → **toujours** `import type` pour les types purs
+- `sort-imports` ESLint → membres d'import triés alphabétiquement
+- `forwardRef`, `useId`, `useState`... doivent être **explicitement importés** depuis React
+- Complexité cyclomatique max : **10** (ESLint) → extraire les fonctions helper si dépassé
+
+```tsx
+// ✅ Correct
+import { forwardRef, type InputHTMLAttributes, useId } from 'react';
+
+// ❌ Incorrect
+import { InputHTMLAttributes, forwardRef, useId } from 'react';
+```
+
+---
+
 ## 🧩 Services
 
-### `auth.service.ts` ✅
+### `auth.service.ts`
 
 ```typescript
 register(username, password): Promise<AuthResponse>
@@ -180,7 +241,7 @@ saveToken(token: string): void
 loginWithGoogle(): void  // window.location.href = VITE_API_URL/auth/google
 ```
 
-### `api.service.ts` ✅
+### `api.service.ts`
 
 ```typescript
 apiFetch<T>(endpoint, options?): Promise<T>
@@ -189,7 +250,7 @@ apiFetch<T>(endpoint, options?): Promise<T>
 
 ---
 
-## 🧭 Routing ✅
+## 🧭 Routing
 
 ```tsx
 <Routes>
@@ -208,163 +269,33 @@ apiFetch<T>(endpoint, options?): Promise<T>
 
 ---
 
-## 🗂️ Types Partagés ✅
-
-```typescript
-export type UserRole = 'user' | 'admin';
-
-export interface User {
-  id: string;
-  username: string | null;
-  email: string | null;
-  role: UserRole;
-  createdAt: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  user: User;
-}
-```
-
----
-
-## 🎨 Charte Graphique
-
-### Design System
-
-- **Style** : À définir (minimaliste recommandé pour un portfolio)
-- **Mode** : À définir (light / dark / système)
-
-### Palette de Couleurs ⏳
-
-_(à définir — modifier `src/index.css`)_
-
-```css
-@import 'tailwindcss';
-
-@theme {
-  --color-primary: ;
-  --color-primary-light: ;
-  --color-primary-dark: ;
-  --color-bg-primary: ;
-  --color-bg-secondary: ;
-  --color-text-primary: ;
-  --color-text-secondary: ;
-  --color-text-muted: ;
-  --color-success: ;
-  --color-error: ;
-  --color-warning: ;
-}
-```
-
-### Typographie ⏳
-
-_(à définir — éviter Inter/Roboto)_
-
----
-
-## 🎨 Configuration PrimeReact (PassThrough API)
-
-### Architecture
-
-```
-src/prime/
-├── index.tsx                # Export customTheme (actuellement vide)
-└── components/              # À créer
-    ├── inputText.ts
-    ├── button.ts
-    └── ...
-```
-
-### Setup dans `main.tsx`
-
-```tsx
-import { PrimeReactProvider } from 'primereact/api';
-import { usePassThrough } from 'primereact/passthrough';
-import Tailwind from 'primereact/passthrough/tailwind';
-import { customTheme } from '@/prime';
-
-const CustomTailwind = usePassThrough(Tailwind, customTheme, {
-  mergeSections: true,
-  mergeProps: false,
-});
-
-<PrimeReactProvider value={CustomTailwind}>
-  <App />
-</PrimeReactProvider>;
-```
-
-### Ressources
-
-- [Documentation PassThrough API](https://primereact.org/passthrough/)
-- [Tailwind PassThrough Base](https://github.com/primefaces/primereact/blob/master/components/lib/passthrough/tailwind/index.js)
-
----
-
-## 🗃️ Gestion d'État
-
-### AuthContext ✅
-
-```typescript
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  isAdmin: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-}
-```
-
-> Note : `token` n'est pas exposé dans le contexte — il est lu directement via `authService.getToken()` dans `apiFetch`.
-
-### LocalStorage
-
-| Clé            | Valeur                     |
-| -------------- | -------------------------- |
-| `access_token` | JWT renvoyé par le backend |
-
----
-
-## 🎯 Conventions Spécifiques
-
-### Imports
-
-- Alias `@/` pour tous les imports internes
-- `tsconfig.app.json` : `"@/*": ["./src/*"]`
-
-### Composants
-
-- Dossier par page : `PageName/index.tsx`
-- Composants simples : `ComponentName.tsx`
-
----
-
 ## 🚀 Commandes
 
 ```bash
-pnpm dev
-pnpm build
-pnpm preview
-pnpm lint
+npm run dev
+npm run build
+npm run preview
+npm run lint
 ```
 
 ---
 
 ## 📝 TODO / Roadmap Frontend
 
-- [x] Setup initial (Vite + React + TypeScript + Tailwind + PrimeReact)
-- [x] Alias `@/` (tsconfig + vite.config)
-- [x] `AuthContext` + `useAuth`
-- [x] `auth.service.ts` + `api.service.ts`
-- [x] Guards `ProtectedRoute` + `AdminRoute`
+- [x] Setup initial (Vite + React + TypeScript + Tailwind)
+- [x] Alias `@/`
+- [x] AuthContext + ThemeContext + useAuth
+- [x] auth.service.ts + api.service.ts
+- [x] Guards ProtectedRoute + AdminRoute
 - [x] Pages Login + Register (logique + UI)
 - [x] Pages Home, Dashboard, Admin (UI complète)
 - [x] Navbar + Footer + Layout
-- [x] Gestion callback Google OAuth (`/auth/callback`)
-- [x] Créer composants UI de base (Button, Input...)
-- [x] GoogleButton stylisé (`components/auth/`)
-- [x] Responsive
-- [x] Définir la charte graphique (couleurs, typo) dans `index.css`
-<!-- A voir a l'avenir -->
-- [ ] Configuration PrimeReact PassThrough (`src/prime/`)
+- [x] Callback Google OAuth
+- [x] Composants UI : Button, Input
+- [x] Composants auth : FormField, AuthFormWrapper, GoogleSignInButton
+- [x] Composants shared : Avatar, ErrorMessage
+- [x] Charte graphique dark/light dans index.css
+- [x] Dockerfile multi-stage + nginx
+- [ ] Responsive complet (mobile)
+- [ ] CI/CD GitHub Actions
+- [ ] PrimeReact PassThrough (optionnel — décision suspendue)

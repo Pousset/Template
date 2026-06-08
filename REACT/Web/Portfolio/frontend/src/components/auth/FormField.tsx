@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useId } from 'react';
+import { type InputHTMLAttributes, useId } from 'react';
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -11,10 +11,7 @@ export function FormField({ label, error, id, ...props }: FormFieldProps) {
 
   return (
     <div className="space-y-2">
-      <label
-        htmlFor={inputId}
-        className="text-xs font-medium text-text-secondary uppercase tracking-wider"
-      >
+      <label htmlFor={inputId} className="text-xs font-medium text-text-secondary uppercase tracking-wider">
         {label}
       </label>
       <input
