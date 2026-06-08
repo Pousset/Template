@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes, forwardRef } from 'react';
+import { type ButtonHTMLAttributes, cloneElement, forwardRef, type ReactElement } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -8,6 +8,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   isLoading?: boolean;
   fullWidth?: boolean;
+  asChild?: boolean;
 }
 
 const base =
@@ -35,6 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = 'md',
       isLoading = false,
       fullWidth = false,
+      asChild = false,
       className = '',
       disabled,
       children,
@@ -42,15 +44,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
+    const classes = [base, variants[variant], sizes[size], fullWidth ? 'w-full' : '', className]
+      .filter(Boolean)
+      .join(' ');
+
+    if (asChild && children) {
+      const child = children as ReactElement<Record<string, unknown>>;
+      return cloneElement(child, {
+        ...props,
+        ref,
+        className: [classes, child.props.className].filter(Boolean).join(' '),
+      });
+    }
+
     return (
-      <button
-        ref={ref}
-        disabled={disabled || isLoading}
-        className={[base, variants[variant as Variant], sizes[size as Size], fullWidth ? 'w-full' : '', className]
-          .filter(Boolean)
-          .join(' ')}
-        {...props}
-      >
+      <button ref={ref} disabled={disabled || isLoading} className={classes} {...props}>
         {isLoading ? (
           <>
             <svg

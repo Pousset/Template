@@ -98,12 +98,9 @@ export default function Navbar() {
               </Button>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="text-sm px-4 py-1.5 rounded-md bg-primary text-white hover:bg-primary-dark transition-colors"
-            >
-              Connexion
-            </Link>
+            <Button asChild variant="secondary">
+              <Link to="/login">Connexion</Link>
+            </Button>
           )}
         </div>
       </div>
