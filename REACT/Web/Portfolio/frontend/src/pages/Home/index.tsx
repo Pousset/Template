@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { Badge, Button, Card, Spinner } from '@/components/ui';
+import { Button } from '@/components/ui';
 
 export default function Home() {
   const { user } = useAuth();
@@ -25,16 +25,6 @@ export default function Home() {
 
       {/* Content */}
       <div className="text-center max-w-2xl mx-auto space-y-6">
-        {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-bg-card text-xs text-text-secondary tracking-widest uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          Components :
-          <Spinner />
-          <Button>Bouton</Button>
-          <Card>Cards</Card>
-          <Badge>Badge</Badge>
-        </div>
-
         {/* Title */}
         <div className="space-y-3">
           <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-text-primary leading-none">
@@ -50,26 +40,17 @@ export default function Home() {
         {/* CTA */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           {user ? (
-            <Link
-              to="/dashboard"
-              className="px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors text-sm"
-            >
-              Accéder au Dashboard →
-            </Link>
+            <Button asChild>
+              <Link to="/dashboard">Accéder au Dashboard →</Link>
+            </Button>
           ) : (
             <>
-              <Link
-                to="/register"
-                className="px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors text-sm"
-              >
-                Créer un compte
-              </Link>
-              <Link
-                to="/login"
-                className="px-6 py-3 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-text-muted transition-colors text-sm"
-              >
-                Se connecter
-              </Link>
+              <Button asChild variant="secondary">
+                <Link to="/register">Créer un compte</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link to="/login">Se connecter</Link>
+              </Button>
             </>
           )}
         </div>
