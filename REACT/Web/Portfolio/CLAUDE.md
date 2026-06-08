@@ -12,7 +12,7 @@ Portfolio/
 │   ├── src/
 │   │   ├── services/          # api.service.ts, auth.service.ts
 │   │   ├── hooks/             # useAuth.ts
-│   │   ├── context/           # AuthContext.tsx
+│   │   ├── context/           # AuthContext.tsx, ThemeContext.tsx
 │   │   ├── guards/            # ProtectedRoute.tsx, AdminRoute.tsx
 │   │   ├── types/             # user.types.ts
 │   │   ├── pages/
@@ -23,7 +23,10 @@ Portfolio/
 │   │   │   ├── Admin/         # Espace admin uniquement
 │   │   │   └── AuthCallback/  # Callback Google OAuth
 │   │   └── components/
-│   │       └── layout/        # Navbar, Footer, Layout
+│   │       ├── layout/        # Navbar, Footer, Layout
+│   │       ├── ui/            # Button, Input (composants custom)
+│   │       ├── auth/          # AuthFormWrapper, FormField, GoogleSignInButton...
+│   │       └── shared/        # Avatar, ErrorMessage...
 │   ├── .env                   # VITE_API_URL=http://localhost:3001
 │   └── CLAUDE.md
 ├── backend/                   # NestJS 11 + TypeScript
@@ -37,7 +40,7 @@ Portfolio/
 │   ├── .env                   # PORT, JWT_SECRET, GOOGLE_CLIENT_ID...
 │   ├── app.sqlite             # Base de données SQLite (dev, gitignore)
 │   └── CLAUDE.md
-├── docker-compose.yml
+├── docker-compose.yml         # ✅ Orchestration complète
 └── CLAUDE.md                  # Ce fichier
 ```
 
@@ -50,8 +53,8 @@ Portfolio/
 | Authentification | JWT + Passport.js + Google OAuth 2.0             |
 | Base de données  | SQLite (dev), PostgreSQL (prod)                  |
 | ORM              | TypeORM                                          |
-| Containerisation | Docker + Docker Compose                          |
-| CI/CD            | GitHub Actions                                   |
+| Containerisation | Docker + Docker Compose ✅                       |
+| CI/CD            | GitHub Actions (à faire)                         |
 
 ## 👤 Système d'Authentification
 
@@ -104,6 +107,41 @@ Portfolio/
 
 ---
 
+## 🐳 Docker
+
+### Services
+
+| Service    | Image              | Port    | Description     |
+| ---------- | ------------------ | ------- | --------------- |
+| `postgres` | postgres:16-alpine | 5432    | Base de données |
+| `backend`  | node:22-alpine     | 3001    | API NestJS      |
+| `frontend` | nginx:alpine       | 5173→80 | React buildé    |
+
+### Variables d'environnement Docker
+
+Le `docker-compose.yml` expose directement les variables dans `environment`. Les variables sensibles (`JWT_SECRET`, Google OAuth) doivent être remplacées avant un déploiement réel.
+
+**Variable clé :** `DB_SSL: "false"` — désactive SSL pour PostgreSQL local. Passer à `"true"` en prod sur un hébergeur cloud.
+
+### Commandes
+
+```bash
+
+# Démarre sans build (plus rapide)
+docker compose up
+
+# Démarrer tout
+docker compose up --build
+
+# Stopper
+docker compose down
+
+# Voir les logs d'un service
+docker logs portfolio-backend
+```
+
+---
+
 ## 📊 État de l'Implémentation
 
 ### ✅ Backend — Complété
@@ -114,33 +152,33 @@ Portfolio/
 - Routes admin protégées (dashboard, users, patch role)
 - SeedService — création admin + promotion compte Google via `.env`
 - Tests unitaires — 39 tests, 5 suites
+- Config TypeORM — SSL conditionnel via `DB_SSL`
 
 ### ✅ Frontend — Complété
 
-- Setup (Vite + React 19 + TypeScript + Tailwind 4.x + PrimeReact)
-- AuthContext + useAuth + ProtectedRoute + AdminRoute
+- Setup (Vite + React 19 + TypeScript + Tailwind 4.x)
+- AuthContext + ThemeContext (dark/light) + useAuth
+- ProtectedRoute + AdminRoute
 - auth.service.ts + api.service.ts
 - Pages : Home, Login, Register, Dashboard, Admin, AuthCallback
 - Navbar + Footer + Layout
-- Callback Google OAuth (`/auth/callback`)
+- Composants UI custom : Button, Input, FormField
+- Composants auth : AuthFormWrapper, AuthDivider, GoogleSignInButton
+- Composants shared : Avatar, ErrorMessage
+- Package manager : **npm**
 
-### 🔄 En Cours / À Faire
+### ✅ Infrastructure — Complété
 
-- [ ] Charte graphique (couleurs, typo) dans `frontend/src/index.css`
-- [ ] Configuration PrimeReact PassThrough (`src/prime/`)
-- [ ] Composants UI de base (Button, Input, Modal...)
-- [ ] GoogleButton stylisé
-- [ ] Responsive
-- [ ] Configuration Docker
+- Docker Compose (PostgreSQL + NestJS + Nginx/React)
+- Dockerfiles frontend (multi-stage: node + nginx) et backend (multi-stage: node)
+- SSL conditionnel (`DB_SSL`) pour supporter dev Docker et prod cloud
+
+### 🔄 À Faire
+
 - [ ] CI/CD GitHub Actions
 - [ ] Migrations TypeORM pour la production
 - [ ] Migration PostgreSQL (prod)
-
-### 🔧 Ports de Configuration
-
-- **Backend** : `3001`
-- **Frontend** : `5173` (Vite par défaut)
-- **CORS** : Autorise `http://localhost:5173`
+- [ ] PrimeReact PassThrough (optionnel — décision suspendue)
 
 ---
 
@@ -175,9 +213,10 @@ Portfolio/
 
 #### TypeScript
 
-- Strict mode activé
+- Strict mode activé (`verbatimModuleSyntax` activé — utiliser `import type` pour les types)
 - Types explicites (éviter `any`)
 - Interfaces préférées aux types pour les objets
+- `forwardRef`, `useId` etc. doivent être explicitement importés depuis React
 
 #### Nommage
 
@@ -192,6 +231,7 @@ Portfolio/
 - **Utiliser les alias `@/`** dans les deux projets pour les imports internes
 - Backend : `import { User } from '@/modules/user/entities/user.entity';`
 - Frontend : `import { Button } from '@/components/ui/Button';`
+- ESLint enforce `sort-imports` — toujours trier alphabétiquement les membres d'un import
 
 #### Git
 
@@ -212,17 +252,23 @@ Portfolio/
 
 ## 🚀 Commandes Utiles
 
-### Développement
+### Développement local
 
 ```bash
 # Frontend
-cd frontend && pnpm dev
+cd frontend && npm run dev
 
 # Backend
 cd backend && npm run start:dev
+```
 
-# Les deux (depuis la racine)
-npm run dev
+### Docker
+
+```bash
+docker compose up --build
+docker compose down
+docker logs portfolio-backend
+docker logs portfolio-frontend
 ```
 
 ### Tests
@@ -249,8 +295,8 @@ cd backend && npm run migration:run
 - [x] Système de rôles (user / admin)
 - [x] Page Admin protégée
 - [x] Tests unitaires backend
-- [ ] Charte graphique + composants UI
-- [ ] Définir les fonctionnalités utilisateur connecté
-- [ ] Configuration Docker
+- [x] Charte graphique + composants UI
+- [x] Configuration Docker (PostgreSQL + NestJS + Nginx)
 - [ ] CI/CD GitHub Actions
+- [ ] Migrations TypeORM pour la production
 - [ ] Migration PostgreSQL pour la production

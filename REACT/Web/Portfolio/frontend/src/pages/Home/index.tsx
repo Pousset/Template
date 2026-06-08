@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { Button, Input, Badge, Card, Spinner } from '@/components/ui';
+import { Badge, Button, Card, Spinner } from '@/components/ui';
 
 export default function Home() {
   const { user } = useAuth();

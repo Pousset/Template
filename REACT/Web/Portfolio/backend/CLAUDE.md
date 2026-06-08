@@ -11,6 +11,7 @@
 - **Hachage** : bcrypt
 - **Port** : `3001` (configuré dans `.env`)
 - **CORS** : `http://localhost:5173`
+- **Package manager** : npm
 
 **Version Actuelle** : 0.4.0  
 **Dernière Mise à Jour** : Juin 2026
@@ -60,14 +61,20 @@
   - ✅ `GET /auth/google` → redirect vers Google
   - ✅ `GET /auth/google/callback` → upsert user + JWT + redirect frontend (`/auth/callback?token=...`)
 
+#### Base de données
+
+- ✅ Config TypeORM avec SSL conditionnel via variable `DB_SSL`
+  - `DB_SSL=false` → pas de SSL (Docker local, dev)
+  - `DB_SSL=true` → `{ rejectUnauthorized: false }` (prod cloud)
+
 #### Tests
 
 - ✅ Tests unitaires — 39 tests, 5 suites, tous passants
-  - `user.service.spec.ts` — CRUD utilisateurs (findById, create, updateRole, linkGoogleId...)
-  - `auth.service.spec.ts` — register, login, Google OAuth (conflits, mauvais mot de passe, création compte...)
+  - `user.service.spec.ts` — CRUD utilisateurs
+  - `auth.service.spec.ts` — register, login, Google OAuth
   - `auth.controller.spec.ts` — délégation AuthService, redirect Google callback
-  - `admin.spec.ts` — AdminService + AdminController (routes protégées, updateRole...)
-  - `seed.service.spec.ts` — seed admin + promotion Google (idempotence, variables manquantes...)
+  - `admin.spec.ts` — AdminService + AdminController
+  - `seed.service.spec.ts` — seed admin + promotion Google
 
 ---
 
@@ -97,45 +104,46 @@ backend/
 │   │   │   │   ├── jwt.strategy.ts          # Validation du JWT ✅
 │   │   │   │   └── google.strategy.ts       # OAuth Google ✅
 │   │   │   ├── guards/
-│   │   │   │   ├── jwt-auth.guard.ts        # Protège les routes auth ✅
-│   │   │   │   ├── google-auth.guard.ts     # Protège les routes Google OAuth ✅
-│   │   │   │   └── roles.guard.ts           # Protège les routes admin ✅
+│   │   │   │   ├── jwt-auth.guard.ts        # ✅
+│   │   │   │   ├── google-auth.guard.ts     # ✅
+│   │   │   │   └── roles.guard.ts           # ✅
 │   │   │   ├── decorators/
 │   │   │   │   └── roles.decorator.ts       # @Roles('admin') ✅
 │   │   │   ├── dto/
 │   │   │   │   ├── register.dto.ts          # ✅
 │   │   │   │   └── login.dto.ts             # ✅
 │   │   │   ├── auth.controller.ts           # /auth/* ✅
-│   │   │   ├── auth.service.ts              # Logique login/register/JWT ✅
+│   │   │   ├── auth.service.ts              # ✅
 │   │   │   └── auth.module.ts               # ✅
 │   │   ├── user/
 │   │   │   ├── entities/
-│   │   │   │   └── user.entity.ts           # Entité TypeORM ✅
-│   │   │   ├── user.service.ts              # CRUD utilisateurs ✅
+│   │   │   │   └── user.entity.ts           # ✅
+│   │   │   ├── user.service.ts              # ✅
 │   │   │   └── user.module.ts               # ✅
 │   │   └── admin/
 │   │       ├── admin.controller.ts          # /admin/* ✅
 │   │       ├── admin.service.ts             # ✅
 │   │       └── admin.module.ts              # ✅
 │   ├── config/
-│   │   └── database.config.ts               # Config TypeORM
+│   │   └── database.config.ts               # ✅ SSL conditionnel via DB_SSL
 │   ├── database/
 │   │   ├── data-source.ts
-│   │   ├── seed.service.ts              # ✅ Seed admin + promotion Google au démarrage
-│   │   ├── seed.module.ts               # ✅
-│   │   ├── migrations/
+│   │   ├── seed.service.ts                  # ✅
+│   │   ├── seed.module.ts                   # ✅
+│   │   ├── migrations/                      # ⏳ à créer pour la prod
 │   │   └── run-migrations.ts
 │   ├── app.module.ts
 │   └── main.ts
 ├── test/
-│   ├── user.service.spec.ts             # ✅
-│   ├── auth.service.spec.ts             # ✅
-│   ├── auth.controller.spec.ts          # ✅
-│   ├── admin.spec.ts                    # ✅
-│   └── seed.service.spec.ts             # ✅
+│   ├── user.service.spec.ts                 # ✅
+│   ├── auth.service.spec.ts                 # ✅
+│   ├── auth.controller.spec.ts              # ✅
+│   ├── admin.spec.ts                        # ✅
+│   └── seed.service.spec.ts                 # ✅
+├── Dockerfile                               # ✅ Multi-stage (builder + production)
 ├── .env
 ├── .env.example
-├── app.sqlite                           # ⚠️ gitignore — ne pas committer
+├── app.sqlite                               # ⚠️ gitignore
 └── package.json
 ```
 
@@ -144,37 +152,25 @@ backend/
 ## 🗄️ Schéma de Base de Données (TypeORM)
 
 ```typescript
-// src/modules/user/entities/user.entity.ts
-
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-
-export type UserRole = 'user' | 'admin';
-
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true, nullable: true })
-  username: string | null; // null si connexion Google sans username défini
+  username: string | null;
 
   @Column({ unique: true, nullable: true })
-  email: string | null; // requis pour Google OAuth
+  email: string | null;
 
   @Column({ nullable: true, select: false })
-  passwordHash: string | null; // null si connexion Google uniquement
+  passwordHash: string | null;
 
   @Column({ nullable: true, unique: true })
-  googleId: string | null; // null si inscription classique
+  googleId: string | null;
 
   @Column({ default: 'user' })
-  role: UserRole; // 'user' | 'admin'
+  role: UserRole;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -186,169 +182,40 @@ export class User {
 
 ---
 
-## 🔐 Authentification
+## 🐳 Docker
 
-### Flux inscription classique
+### Dockerfile (multi-stage)
 
-```
-POST /auth/register { username, password }
-→ Vérifier unicité username
-→ Hash password (bcrypt, saltRounds: 10)
-→ Créer User (role: 'user')
-→ Générer JWT
-→ Renvoyer { accessToken, user }
-```
+```dockerfile
+# Stage 1: Build
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-### Flux connexion classique
-
-```
-POST /auth/login { username, password }
-→ Trouver User par username
-→ Vérifier bcrypt.compare(password, passwordHash)
-→ Générer JWT
-→ Renvoyer { accessToken, user }
-```
-
-### Flux Google OAuth ✅
-
-```
-GET /auth/google                         → Redirect vers Google
-GET /auth/google/callback                → Google rappelle ici
-→ Upsert User (googleId + email + displayName)
-→ Générer JWT
-→ Redirect frontend : ${FRONTEND_URL}/auth/callback?token=<jwt>
+# Stage 2: Production
+FROM node:22-alpine AS production
+WORKDIR /app
+RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+COPY --from=builder /app/dist ./dist
+RUN chown -R nestjs:nodejs /app
+USER nestjs
+EXPOSE 3001
+CMD ["node", "dist/main"]
 ```
 
-**Piège `.env` :** `GOOGLE_CALLBACK_URL` doit être seul sur sa ligne — aucun paramètre parasite (`flowName=...`) ne doit y être accolé.
+### Variables Docker
 
-### JWT Payload
-
-```typescript
-interface JwtPayload {
-  sub: string; // user.id
-  username: string;
-  role: UserRole;
-}
-```
-
----
-
-## 📡 API REST Endpoints
-
-### Auth
-
-#### `POST /auth/register` ✅
-
-**Body** :
-
-```json
-{ "username": "string (3-20 chars)", "password": "string (min 8 chars)" }
-```
-
-**Response** :
-
-```json
-{
-  "accessToken": "string",
-  "user": { "id": "uuid", "username": "string", "role": "user" }
-}
-```
-
-#### `POST /auth/login` ✅
-
-**Body** :
-
-```json
-{ "username": "string", "password": "string" }
-```
-
-**Response** :
-
-```json
-{
-  "accessToken": "string",
-  "user": { "id": "uuid", "username": "string", "role": "user|admin" }
-}
-```
-
-#### `GET /auth/me` 🔒 ✅
-
-**Response** : Objet `User` sans `passwordHash`
-
-#### `GET /auth/google` ✅
-
-Redirige vers Google OAuth. Déclenché par `GoogleAuthGuard`.
-
-#### `GET /auth/google/callback` ✅
-
-Callback Google → upsert user → génère JWT → redirige vers `${FRONTEND_URL}/auth/callback?token=<jwt>`.
-
----
-
-### Admin ✅
-
-#### `GET /admin/dashboard` 🔒🛡️
-
-#### `GET /admin/users` 🔒🛡️
-
-Liste tous les utilisateurs.
-
-#### `PATCH /admin/users/:id/role` 🔒🛡️
-
-**Body** : `{ "role": "user" | "admin" }`
-
----
-
-## 🛡️ Guards & Décorateurs
-
-### `GoogleAuthGuard` ✅
-
-Lance le flux OAuth Google via Passport. Utilisé sur `GET /auth/google` et `GET /auth/google/callback`.
-
-### `JwtAuthGuard` ✅
-
-Vérifie la présence et la validité du JWT dans le header `Authorization: Bearer <token>`.
-
-### `RolesGuard` ✅
-
-Vérifie que l'utilisateur a le rôle requis.  
-→ Toujours combiné avec `JwtAuthGuard`.
-
-### `@Roles('admin')` ✅
-
-```typescript
-@Get('dashboard')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('admin')
-getDashboard() { ... }
-```
-
----
-
-## 🔧 DTOs avec class-validator
-
-```typescript
-// register.dto.ts
-export class RegisterDto {
-  @IsString()
-  @MinLength(3)
-  @MaxLength(20)
-  username: string;
-
-  @IsString()
-  @MinLength(8)
-  password: string;
-}
-
-// login.dto.ts
-export class LoginDto {
-  @IsString()
-  username: string;
-
-  @IsString()
-  password: string;
-}
-```
+| Variable       | Valeur Docker      | Notes                               |
+| -------------- | ------------------ | ----------------------------------- |
+| `DATABASE_URL` | `postgresql://...` | Pointe vers le container `postgres` |
+| `DB_SSL`       | `"false"`          | Pas de SSL en local Docker          |
+| `NODE_ENV`     | `production`       |                                     |
+| `JWT_SECRET`   | À remplacer        | Ne pas committer la vraie valeur    |
 
 ---
 
@@ -357,48 +224,28 @@ export class LoginDto {
 ### Variables d'environnement (`.env`)
 
 ```env
-# App
 PORT=3001
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
 
-# Base de données
 DATABASE_PATH=app.sqlite
+DB_SSL=false
 
-# JWT
 JWT_SECRET=your_super_secret_key_change_in_production
 JWT_EXPIRES_IN=7d
 
-# Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
 
-# Seed admin initial (laisser vide pour désactiver)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=change_me_in_production
-
-# Promotion d'un compte Google en admin (laisser vide pour désactiver)
 ADMIN_GOOGLE_EMAIL=ton.email@gmail.com
-```
-
-### TypeORM Config
-
-```typescript
-TypeOrmModule.forRoot({
-  type: 'sqlite',
-  database: process.env.DATABASE_PATH || 'app.sqlite',
-  entities: [User],
-  synchronize: true, // ⚠️ false en production
-  logging: false,
-});
 ```
 
 ---
 
 ## 🚀 Commandes
-
-### Depuis `backend/`
 
 ```bash
 npm run start:dev
@@ -411,27 +258,17 @@ npm run migration:run
 npm run migration:revert
 ```
 
-### Depuis la racine `Portfolio/`
-
-```bash
-npm run dev:backend      # démarre NestJS seul
-npm run dev              # démarre backend + frontend en parallèle (concurrently)
-```
-
 ---
 
 ## 📝 TODO / Roadmap Backend
 
-- [x] Installer les dépendances auth
-- [x] Créer l'entité `User`
-- [x] Implémenter `AuthService` (register, login, JWT)
-- [x] Implémenter `JwtStrategy` + `JwtAuthGuard`
-- [x] Implémenter `RolesGuard` + `@Roles()`
-- [x] Créer `AdminController` + `AdminService` (dashboard, users, patch role)
-- [x] Configurer les variables d'environnement
-- [x] `SeedService` + `SeedModule` — création admin au démarrage via variables d'env
-- [x] Promotion compte Google en admin via `ADMIN_GOOGLE_EMAIL`
-- [x] Implémenter Google OAuth (`GoogleStrategy` + `GoogleAuthGuard` + routes callback)
-- [x] Tests unitaires (39 tests — auth, admin, user, seed)
+- [x] Auth classique (register, login, JWT)
+- [x] Google OAuth
+- [x] Système de rôles (user / admin)
+- [x] Routes admin protégées
+- [x] SeedService + SeedModule
+- [x] Tests unitaires (39 tests)
+- [x] Config TypeORM SSL conditionnel (DB_SSL)
+- [x] Dockerfile multi-stage
 - [ ] Migrations TypeORM pour la production
-- [ ] Migration PostgreSQL (prod)
+- [ ] CI/CD GitHub Actions
