@@ -365,5 +365,6 @@ pnpm lint
 - [x] Créer composants UI de base (Button, Input...)
 - [x] GoogleButton stylisé (`components/auth/`)
 - [x] Responsive
-- [ ] Définir la charte graphique (couleurs, typo) dans `index.css`
+- [x] Définir la charte graphique (couleurs, typo) dans `index.css`
+<!-- A voir a l'avenir -->
 - [ ] Configuration PrimeReact PassThrough (`src/prime/`)
