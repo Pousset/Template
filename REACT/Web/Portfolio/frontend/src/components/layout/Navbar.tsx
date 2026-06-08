@@ -65,6 +65,9 @@ export default function Navbar() {
           <Link to="/" className="hover:text-text-primary transition-colors">
             Home
           </Link>
+          <Link to="/components" className="hover:text-text-primary transition-colors">
+            Components
+          </Link>
           {user && (
             <Link to="/dashboard" className="hover:text-text-primary transition-colors">
               Dashboard
