@@ -1,0 +1,40 @@
+# Frontend specific ignores
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Vite
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Testing
+coverage/
+
+# Cache
+.eslintcache
+.parcel-cache/
