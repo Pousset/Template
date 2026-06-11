@@ -2,12 +2,14 @@ use tauri::Manager;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri_plugin_shell::ShellExt;
+use tauri_plugin_notification::NotificationExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_window_state::Builder::default().build())
+    .plugin(tauri_plugin_notification::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -31,6 +33,14 @@ pub fn run() {
         .env("FRONTEND_URL", "http://localhost:5173")
         .spawn()
         .expect("Impossible de démarrer le backend");
+
+      // Notification de démarrage
+      app.notification()
+        .builder()
+        .title("App")
+        .body("Backend démarré et prêt.")
+        .show()
+        .expect("Impossible d'envoyer la notification");
 
       // System tray
       let show = MenuItem::with_id(app, "show", "Afficher", true, None::<&str>)?;
