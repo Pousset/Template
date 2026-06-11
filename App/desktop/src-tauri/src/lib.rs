@@ -4,6 +4,7 @@ use tauri_plugin_shell::ShellExt;
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_shell::init())
+    .plugin(tauri_plugin_window_state::Builder::default().build())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -12,7 +13,6 @@ pub fn run() {
             .build(),
         )?;
       }
-
       let backend_path = "C:\\Users\\matfo\\Documents\\GitHub\\Template\\App\\backend\\dist-bin\\index.js";
       app.shell()
         .command("node")
@@ -26,7 +26,6 @@ pub fn run() {
         .env("FRONTEND_URL", "http://localhost:5173")
         .spawn()
         .expect("Impossible de démarrer le backend");
-
       Ok(())
     })
     .run(tauri::generate_context!())
