@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { User } from '../modules/user/entities/user.entity';
 
 export const getDatabaseConfig = (
   configService: ConfigService,
@@ -11,7 +12,7 @@ export const getDatabaseConfig = (
     return {
       type: 'postgres',
       url: databaseUrl,
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      entities: [User],
       synchronize: false,
       logging: nodeEnv === 'development',
       migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
@@ -26,7 +27,7 @@ export const getDatabaseConfig = (
   return {
     type: 'better-sqlite3',
     database: configService.get<string>('DATABASE_PATH', 'app.sqlite'),
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    entities: [User],
     synchronize: true,
     logging: false,
   };
