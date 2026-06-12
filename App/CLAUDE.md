@@ -60,7 +60,7 @@ Portfolio/
 
 ### Méthodes de connexion
 
-- **Inscription classique** : nom d'utilisateur + mot de passe (hashé avec bcrypt)
+- **Inscription classique** : nom d'utilisateur + mot de passe (hashé avec bcryptjs)
 - **Google OAuth** : connexion via compte Google (création de compte automatique si premier login)
 
 ### Rôles utilisateurs

@@ -8,7 +8,7 @@
 - **ORM** : TypeORM 0.3.28
 - **Authentification** : JWT (`@nestjs/jwt`, `@nestjs/passport`) + Google OAuth 2.0 (`passport-google-oauth20`)
 - **Validation** : class-validator, class-transformer
-- **Hachage** : bcrypt
+- **Hachage** : bcryptjs
 - **Port** : `3001` (configuré dans `.env`)
 - **CORS** : `http://localhost:5173`
 - **Package manager** : npm
@@ -24,7 +24,7 @@
 
 #### Auth
 
-- ✅ Inscription classique (`POST /auth/register`) — publique, hash bcrypt, retourne JWT
+- ✅ Inscription classique (`POST /auth/register`) — publique, hash bcryptjs, retourne JWT
 - ✅ Connexion classique (`POST /auth/login`) — publique, retourne JWT
 - ✅ Stratégie JWT (`passport-jwt`) + `JwtAuthGuard`
 - ✅ Endpoint `GET /auth/me` — retourne l'utilisateur connecté (JWT requis)

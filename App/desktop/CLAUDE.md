@@ -71,7 +71,7 @@ Le frontend appelle `localhost:3001` comme en dev web.
 - [x] `frontendDist` corrigé → `../../frontend/dist`
 - [x] `targets: ["msi", "nsis"]`
 - [x] `npx tauri build` → `.msi` + `.exe` (NSIS) générés avec succès
-- [ ] Tester l'installeur `.exe` sur une machine propre (tray/notifs/backend OK)
+- [x] Tester l'installeur `.exe` sur une machine propre (tray/notifs/backend OK)
 - [ ] CI GitHub Actions — build Windows automatisé
 - [ ] `tauri-plugin-updater` — vérification via GitHub Releases
 - [ ] Branche `template/tauri` + README dédié

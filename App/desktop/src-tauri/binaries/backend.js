@@ -24111,7 +24111,7 @@ function reject(err) {
     return Promise.reject(err);
 }
 
-/// changes the promise implementation that bcrypt uses
+/// changes the promise implementation that bcryptjs uses
 /// @param {Promise} the implementation to use
 function use(promise) {
     Promise = promise;
@@ -66410,12 +66410,12 @@ module.exports = {
  * @type Crypto
  */
 // eslint-disable-next-line no-undef
-const webCrypto = nodeCrypto.webcrypto || globalThis.crypto
+const webcryptjso = nodeCrypto.webcryptjso || globalThis.crypto
 /**
  * The SubtleCrypto API for low level crypto operations.
  * @type SubtleCrypto
  */
-const subtleCrypto = webCrypto.subtle
+const subtleCrypto = webcryptjso.subtle
 const textEncoder = new TextEncoder()
 
 /**
@@ -66424,16 +66424,16 @@ const textEncoder = new TextEncoder()
  * @returns
  */
 function randomBytes(length) {
-  return webCrypto.getRandomValues(Buffer.alloc(length))
+  return webcryptjso.getRandomValues(Buffer.alloc(length))
 }
 
 async function md5(string) {
   try {
     return nodeCrypto.createHash('md5').update(string, 'utf-8').digest('hex')
   } catch (e) {
-    // `createHash()` failed so we are probably not in Node.js, use the WebCrypto API instead.
-    // Note that the MD5 algorithm on WebCrypto is not available in Node.js.
-    // This is why we cannot just use WebCrypto in all environments.
+    // `createHash()` failed so we are probably not in Node.js, use the Webcryptjso API instead.
+    // Note that the MD5 algorithm on Webcryptjso is not available in Node.js.
+    // This is why we cannot just use Webcryptjso in all environments.
     const data = typeof string === 'string' ? textEncoder.encode(string) : string
     const hash = await subtleCrypto.digest('MD5', data)
     return Array.from(new Uint8Array(hash))
@@ -167595,7 +167595,7 @@ exports.SeedService = void 0;
 const common_1 = __nccwpck_require__(87027);
 const typeorm_1 = __nccwpck_require__(57350);
 const typeorm_2 = __nccwpck_require__(12876);
-const bcrypt = __importStar(__nccwpck_require__(12414));
+const bcryptjs = __importStar(__nccwpck_require__(12414));
 const user_entity_1 = __nccwpck_require__(84689);
 let SeedService = SeedService_1 = class SeedService {
     constructor(userRepository) {
@@ -167619,7 +167619,7 @@ let SeedService = SeedService_1 = class SeedService {
         if (existing) {
             return;
         }
-        const passwordHash = await bcrypt.hash(password, 10);
+        const passwordHash = await bcryptjs.hash(password, 10);
         const admin = this.userRepository.create({
             username,
             passwordHash,
@@ -167996,7 +167996,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __nccwpck_require__(87027);
 const jwt_1 = __nccwpck_require__(12451);
-const bcrypt = __importStar(__nccwpck_require__(12414));
+const bcryptjs = __importStar(__nccwpck_require__(12414));
 const user_service_1 = __nccwpck_require__(70575);
 let AuthService = class AuthService {
     constructor(userService, jwtService) {
@@ -168007,7 +168007,7 @@ let AuthService = class AuthService {
         const existing = await this.userService.findByUsername(dto.username);
         if (existing)
             throw new common_1.ConflictException("Ce nom d'utilisateur est déjà pris");
-        const passwordHash = await bcrypt.hash(dto.password, 10);
+        const passwordHash = await bcryptjs.hash(dto.password, 10);
         const user = await this.userService.create({
             username: dto.username,
             passwordHash,
@@ -168019,7 +168019,7 @@ let AuthService = class AuthService {
         const user = await this.userService.findByUsername(dto.username);
         if (!user || !user.passwordHash)
             throw new common_1.UnauthorizedException('Identifiants invalides');
-        const isValid = await bcrypt.compare(dto.password, user.passwordHash);
+        const isValid = await bcryptjs.compare(dto.password, user.passwordHash);
         if (!isValid)
             throw new common_1.UnauthorizedException('Identifiants invalides');
         return this.buildAuthResponse(user);

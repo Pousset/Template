@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SeedService } from '@/database/seed.service';
 import { User } from '@/modules/user/entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 
 const mockUser = (overrides = {}): User =>
   ({
@@ -59,7 +59,7 @@ describe('SeedService', () => {
   describe('seedAdmin', () => {
     it('crée le compte admin si inexistant', async () => {
       setupEnv({ ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'secret123' });
-      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
+      (bcryptjs.hash as jest.Mock).mockResolvedValue('hashed');
       mockRepo.findOne.mockResolvedValue(null);
       mockRepo.create.mockReturnValue(mockUser());
       mockRepo.save.mockResolvedValue(mockUser());

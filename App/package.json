@@ -22,7 +22,7 @@
       "better-sqlite3",
       "esbuild",
       "@nestjs/core",
-      "bcrypt",
+      "bcryptjs",
       "unrs-resolver"
     ]
   }

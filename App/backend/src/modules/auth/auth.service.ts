@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 import { UserService } from '@/modules/user/user.service';
 import { User } from '@/modules/user/entities/user.entity';
 import { RegisterDto } from '@/modules/auth/dto/register.dto';
@@ -24,7 +24,7 @@ export class AuthService {
     if (existing)
       throw new ConflictException("Ce nom d'utilisateur est déjà pris");
 
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const passwordHash = await bcryptjs.hash(dto.password, 10);
     const user = await this.userService.create({
       username: dto.username,
       passwordHash,
@@ -41,7 +41,7 @@ export class AuthService {
     if (!user || !user.passwordHash)
       throw new UnauthorizedException('Identifiants invalides');
 
-    const isValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isValid = await bcryptjs.compare(dto.password, user.passwordHash);
     if (!isValid) throw new UnauthorizedException('Identifiants invalides');
 
     return this.buildAuthResponse(user);
