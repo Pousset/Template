@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use tauri::Manager;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
@@ -19,12 +20,22 @@ pub fn run() {
         )?;
       }
 
-      // Sidecar backend
-      let backend_path = "C:\\Users\\matfo\\Documents\\GitHub\\Template\\App\\backend\\dist-bin\\index.js";
+      // Sidecar backend — chemin dynamique selon dev/prod
+      let backend_path: PathBuf = if cfg!(debug_assertions) {
+        PathBuf::from("../../backend/dist-bin/index.js")
+      } else {
+        app
+          .path()
+          .resource_dir()
+          .expect("Impossible de résoudre le dossier resources")
+          .join("backend")
+          .join("index.js")
+      };
+
       app.shell()
         .command("node")
-        .args([backend_path])
-        .env("NODE_ENV", "development")
+        .args([backend_path.to_str().expect("Chemin invalide")])
+        .env("NODE_ENV", if cfg!(debug_assertions) { "development" } else { "production" })
         .env("DATABASE_PATH", "app.sqlite")
         .env("JWT_SECRET", "dev-secret-temporaire")
         .env("GOOGLE_CLIENT_ID", "placeholder")
