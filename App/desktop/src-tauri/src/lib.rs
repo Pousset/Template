@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::PathBuf;
 use tauri::Manager;
 use tauri::menu::{Menu, MenuItem};
@@ -32,11 +33,22 @@ pub fn run() {
           .join("index.js")
       };
 
+      // Dossier de données de l'app (AppData/Roaming sur Windows)
+      let app_data_dir = app
+        .path()
+        .app_data_dir()
+        .expect("Impossible de résoudre le dossier de données");
+
+      fs::create_dir_all(&app_data_dir)
+        .expect("Impossible de créer le dossier de données");
+
+      let database_path = app_data_dir.join("app.sqlite");
+
       app.shell()
         .command("node")
         .args([backend_path.to_str().expect("Chemin invalide")])
         .env("NODE_ENV", if cfg!(debug_assertions) { "development" } else { "production" })
-        .env("DATABASE_PATH", "app.sqlite")
+        .env("DATABASE_PATH", database_path.to_str().expect("Chemin invalide"))
         .env("JWT_SECRET", "dev-secret-temporaire")
         .env("GOOGLE_CLIENT_ID", "placeholder")
         .env("GOOGLE_CLIENT_SECRET", "placeholder")
