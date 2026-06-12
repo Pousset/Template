@@ -3,12 +3,12 @@
   "productName": "App",
   "version": "0.1.0",
   "identifier": "com.portfolio.app",
-  "build": {
-    "frontendDist": "../frontend/dist",
-    "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "npm run dev:frontend --prefix ..",
-    "beforeBuildCommand": "npm run build:frontend --prefix .."
-  },
+ "build": {
+  "frontendDist": "../../frontend/dist",
+  "devUrl": "http://localhost:5173",
+  "beforeDevCommand": "npm run dev:frontend --prefix ..",
+  "beforeBuildCommand": "npm run build:frontend --prefix .."
+},
   "app": {
     "windows": [
       {
@@ -25,7 +25,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["msi", "nsis"],
     "resources": {
   "../../backend/dist-bin/*": "backend/"
 },
