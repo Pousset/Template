@@ -112,14 +112,16 @@ describe('SeedService', () => {
 
     it('ignore si le user est déjà admin', async () => {
       setupEnv({ ADMIN_GOOGLE_EMAIL: 'google@example.com' });
-      mockRepo.findOne.mockResolvedValue(mockUser({ email: 'google@example.com', role: 'admin' }));
+      mockRepo.findOne.mockResolvedValue(
+        mockUser({ email: 'google@example.com', role: 'admin' }),
+      );
 
       await service.onApplicationBootstrap();
 
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
 
-    it('log un warning si le user n\'est pas encore en base', async () => {
+    it("log un warning si le user n'est pas encore en base", async () => {
       setupEnv({ ADMIN_GOOGLE_EMAIL: 'google@example.com' });
       mockRepo.findOne.mockResolvedValue(null);
 
