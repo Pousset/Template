@@ -55,10 +55,10 @@ Le système qui vérifie l'identité des utilisateurs et contrôle les accès.
 ## Structure du projet
 
 ```
-Web/
-├── frontend/   # React 19 + Vite
-├── backend/    # NestJS + TypeORM
-└── docker-compose.yml
+React/Web/
++-- frontend/   # React 19 + Vite
++-- backend/    # NestJS + TypeORM
++-- docker-compose.yml
 ```
 
 ---

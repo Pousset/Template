@@ -55,10 +55,11 @@ Le système qui vérifie l'identité des utilisateurs et contrôle les accès.
 ## Structure du projet
 
 ```
-Web/
-├── frontend/   # React 19 + Vite
-├── backend/    # NestJS + TypeORM
-└── docker-compose.yml
+React/App/Tauri/
++-- frontend/   # React 19 + Vite
++-- backend/    # NestJS + TypeORM
++-- desktop/    # Tauri
++-- docker-compose.yml
 ```
 
 ---

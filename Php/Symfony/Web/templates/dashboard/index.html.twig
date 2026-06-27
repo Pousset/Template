@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block body %}
+  <section class="section-heading">
+    <p class="eyebrow">Espace connecte</p>
+    <h1>Bonjour {{ app.user.displayName }}.</h1>
+    <p class="lead">Votre template est pret pour accueillir les premiers modules metier.</p>
+  </section>
+  <section class="grid three">
+    <article class="card">
+      <span class="badge">Auth</span>
+      <h2>Session securisee</h2>
+      <p>Le firewall Symfony protege les routes privees et gere la deconnexion.</p>
+    </article>
+    <article class="card">
+      <span class="badge">Calendar</span>
+      <h2>Evenements</h2>
+      <p>Le calendrier sert de module exemple pour poser les futurs domaines.</p>
+    </article>
+    <article class="card">
+      <span class="badge">Scale</span>
+      <h2>Par domaines</h2>
+      <p>Chaque feature garde ses couches Domain, Application, Infrastructure et Presentation.</p>
+    </article>
+  </section>
+{% endblock %}
+

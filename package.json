@@ -1,0 +1,25 @@
+{
+  "name": "template-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm run react:web:install && npm run react:app:install && npm run symfony:install",
+    "dev:react:web": "npm --prefix React/Web run dev",
+    "dev:react:app": "npm --prefix React/App/Tauri run dev",
+    "dev:symfony": "npm --prefix Php/Symfony/Web run dev",
+    "build:react:web": "npm --prefix React/Web run build",
+    "build:react:app": "npm --prefix React/App/Tauri run build",
+    "lint": "npm run lint:react:web && npm run lint:react:app && npm run lint:symfony",
+    "lint:react:web": "npm --prefix React/Web run lint",
+    "lint:react:app": "npm --prefix React/App/Tauri run lint",
+    "lint:symfony": "npm --prefix Php/Symfony/Web run lint",
+    "test": "npm run test:symfony",
+    "test:symfony": "npm --prefix Php/Symfony/Web run test",
+    "audit:symfony": "npm --prefix Php/Symfony/Web run audit",
+    "symfony:install": "npm --prefix Php/Symfony/Web run install:deps",
+    "symfony:setup": "npm --prefix Php/Symfony/Web run setup",
+    "react:web:install": "npm --prefix React/Web run install:all",
+    "react:app:install": "npm --prefix React/App/Tauri run install:all"
+  }
+}
+

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier - {{ app_name }}{% endblock %}
+
+{% block body %}
+  <section class="section-heading">
+    <p class="eyebrow">Calendrier</p>
+    <h1>Exemple de module metier.</h1>
+    <p class="lead">Ajoutez des evenements pour valider la structure entity, repository, factory et controller.</p>
+  </section>
+
+  <section class="split">
+    <form class="card form-card" method="post">
+      <h2>Nouvel evenement</h2>
+      <label>
+        Titre
+        <input name="title" required placeholder="Rendez-vous client">
+      </label>
+      <label>
+        Debut
+        <input type="datetime-local" name="startsAt" required>
+      </label>
+      <label>
+        Fin
+        <input type="datetime-local" name="endsAt">
+      </label>
+      <label>
+        Couleur
+        <input type="color" name="color" value="#2f81f7">
+      </label>
+      <label>
+        Description
+        <textarea name="description" rows="4" placeholder="Notes internes"></textarea>
+      </label>
+      <button class="button primary full" type="submit">Ajouter</button>
+    </form>
+
+    <div class="calendar-list">
+      {% for event in events %}
+        <article class="event-card" style="--event-color: {{ event.color }}">
+          <div class="event-date">
+            <span>{{ event.startsAt|date('d') }}</span>
+            <small>{{ event.startsAt|date('M') }}</small>
+          </div>
+          <div>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.startsAt|date('H:i') }}{% if event.endsAt %} - {{ event.endsAt|date('H:i') }}{% endif %}</p>
+            {% if event.description %}
+              <p class="muted">{{ event.description }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% else %}
+        <article class="card empty-state">
+          <h2>Aucun evenement pour le moment.</h2>
+          <p>Ajoutez un premier evenement pour tester le flux complet.</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+

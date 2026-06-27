@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - {{ app_name }}{% endblock %}
+
+{% block body %}
+  <section class="section-heading">
+    <p class="eyebrow">Administration</p>
+    <h1>Espace admin protege.</h1>
+    <p class="lead">Cette page est reservee aux comptes possedant le role ROLE_ADMIN.</p>
+  </section>
+  <section class="card wide">
+    <h2>Prochaines briques admin</h2>
+    <p>Gestion utilisateurs, audit, parametrage et supervision peuvent etre ajoutes ici sans melanger le domaine public.</p>
+  </section>
+{% endblock %}
+

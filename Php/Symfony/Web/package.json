@@ -1,0 +1,18 @@
+{
+  "name": "template-symfony-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:deps": "..\\..\\..\\.tools\\php\\php.exe ..\\..\\..\\.tools\\composer.phar install",
+    "setup": "npm run install:deps && npm run db:migrate",
+    "dev": "..\\..\\..\\.tools\\php\\php.exe -S 127.0.0.1:8000 -t public public/router.php",
+    "console": "..\\..\\..\\.tools\\php\\php.exe bin\\console",
+    "db:migrate": "..\\..\\..\\.tools\\php\\php.exe bin\\console doctrine:migrations:migrate --no-interaction",
+    "db:validate": "..\\..\\..\\.tools\\php\\php.exe bin\\console doctrine:schema:validate",
+    "lint": "npm run lint:twig && npm run lint:container",
+    "lint:twig": "..\\..\\..\\.tools\\php\\php.exe bin\\console lint:twig templates",
+    "lint:container": "..\\..\\..\\.tools\\php\\php.exe bin\\console lint:container",
+    "test": "..\\..\\..\\.tools\\php\\php.exe bin\\phpunit",
+    "audit": "..\\..\\..\\.tools\\php\\php.exe ..\\..\\..\\.tools\\composer.phar audit"
+  }
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr" class="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+  </head>
+  <body>
+    {% include 'partials/_navbar.html.twig' %}
+    <main class="page-shell">
+      {% for label, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+      {% endfor %}
+      {% block body %}{% endblock %}
+    </main>
+    {% include 'partials/_footer.html.twig' %}
+  </body>
+</html>
+
