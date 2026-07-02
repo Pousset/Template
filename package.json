@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install:all": "npm run react:web:install && npm run react:app:install && npm run symfony:install",
+    "install:all": "npm run react:web:install && npm run react:app:install && npm run php:symfony:install && npm run php:laravel:install",
     "dev:react:web": "npm --prefix React/Web run dev",
     "dev:react:app": "npm --prefix React/App/Tauri run dev",
     "dev:symfony": "npm --prefix Php/Symfony/Web run dev",
@@ -22,4 +22,3 @@
     "react:app:install": "npm --prefix React/App/Tauri run install:all"
   }
 }
-

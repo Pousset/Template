@@ -153,3 +153,198 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+---
+
+# CLAUDE.md — Laravel Template (Documentation Projet)
+
+## 🎯 Vision du Projet
+
+**Laravel Template** est un template Laravel complet avec une UI inspirée du style GitHub Dark/Light. Il est conçu pour évoluer vers une application portfolio complète avec authentification, gestion de rôles et fonctionnalités avancées. La base est posée pour un développement incrémental et professionnel.
+
+## 🏗️ Architecture Globale
+
+```
+Laravel/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── PageController.php       # Contrôleur des pages publiques
+│   └── Models/
+│       └── User.php
+├── resources/
+│   ├── css/
+│   │   └── app.css                      # Variables CSS + utilitaires Tailwind v4
+│   ├── js/
+│   │   └── app.js
+│   └── views/
+│       ├── layouts/
+│       │   └── app.blade.php            # Layout principal (navbar + footer)
+│       ├── components/
+│       │   ├── layout/
+│       │   │   ├── navbar.blade.php     # <x-layout.navbar />
+│       │   │   └── footer.blade.php    # <x-layout.footer />
+│       │   └── ui/
+│       │       └── button.blade.php    # <x-ui.button />
+│       └── pages/
+│           ├── home.blade.php           # Page d'accueil (hero)
+│           └── laravel.blade.php        # Page de bienvenue Laravel originale
+├── routes/
+│   └── web.php                          # Routes publiques
+└── tests/
+    ├── Feature/
+    └── Unit/
+```
+
+## 🎨 Système de Design (GitHub Dark/Light)
+
+Le thème est géré via des **variables CSS** sur `:root`. Le mode sombre est actif par défaut. La préférence est persistée dans `localStorage` via un script JS dans le layout.
+
+| Variable CSS | Dark | Light |
+|---|---|---|
+| `--color-bg-primary` | `#0d1117` | `#ffffff` |
+| `--color-bg-secondary` | `#161b22` | `#f6f8fa` |
+| `--color-bg-elevated` | `#1c2128` | `#eaeef2` |
+| `--color-text-primary` | `#e6edf3` | `#1f2328` |
+| `--color-text-secondary` | `#7d8590` | `#656d76` |
+| `--color-primary` | `#2f81f7` | `#0969da` |
+| `--color-border` | `#21262d` | `#d0d7de` |
+
+### Classes utilitaires disponibles
+
+```
+text-text-primary / text-text-secondary / text-text-muted
+text-primary / text-primary-light
+bg-bg-primary / bg-bg-secondary / bg-bg-elevated
+border-border / border-border-subtle / border-border-strong
+btn-primary / btn-secondary
+nav-link / nav-link.active
+```
+
+## 🧩 Composants Blade
+
+### Layout
+| Composant | Description |
+|---|---|
+| `<x-layout.navbar />` | Barre de navigation principale |
+| `<x-layout.footer />` | Pied de page avec icônes sociales |
+
+### UI
+| Composant | Props | Description |
+|---|---|---|
+| `<x-ui.button>` | `variant` (primary\|secondary), `href`, `type`, `size` (sm\|md) | Bouton/lien réutilisable |
+
+**Exemple :**
+```blade
+<x-ui.button variant="primary" href="{{ route('home') }}">
+    Accéder
+</x-ui.button>
+```
+
+## 🔗 Routes
+
+| Route | Nom | Vue | Description |
+|---|---|---|---|
+| `GET /` | `home` | `pages.home` | Page d'accueil (hero) |
+| `GET /laravel` | `laravel` | `pages.laravel` | Page de bienvenue Laravel |
+
+**Futur :**
+```
+GET  /login         auth.login      Page de connexion
+POST /login         auth.login      Traitement connexion
+GET  /register      auth.register   Page d'inscription
+POST /register      auth.register   Traitement inscription
+POST /logout        —               Déconnexion
+GET  /dashboard     dashboard       Espace connecté (auth)
+GET  /admin         admin.index     Espace admin (rôle admin)
+```
+
+## 👤 Système d'Authentification (À venir)
+
+### Rôles utilisateurs
+| Rôle | Description | Accès |
+|---|---|---|
+| `guest` | Visiteur non connecté | Pages publiques uniquement |
+| `user` | Connecté | Pages publiques + Dashboard |
+| `admin` | Administrateur | Tout + page Admin exclusive |
+
+### Méthodes prévues
+- **Inscription classique** : nom d'utilisateur + mot de passe (bcrypt)
+- **Google OAuth** : via Socialite
+
+## 🚀 Commandes Utiles
+
+```bash
+# Démarrer le serveur Laravel (NÉCESSAIRE pour voir l'app)
+php artisan serve
+
+# Démarrer Vite (hot reload CSS/JS)
+npm run dev
+
+# Démarrer les deux en même temps
+composer run dev
+
+# Build production
+npm run build
+
+# Lancer les tests
+php artisan test --compact
+
+# Formater le code
+vendor/bin/pint --dirty
+```
+
+> **Note importante** : `npm run dev` démarre uniquement Vite (le bundler CSS/JS).
+> Pour accéder à l'application Laravel, il faut AUSSI lancer `php artisan serve`.
+> Utiliser `composer run dev` lance les deux simultanément.
+
+## 🤖 Instructions pour Claude
+
+### Processus de développement
+
+1. **Analyser** : Comprendre la demande et son impact sur l'existant
+2. **Proposer un plan** : Fichiers à créer/modifier, ordre d'implémentation
+3. **Attendre validation** : Ne pas coder avant validation
+4. **Implémenter** : Étape par étape
+5. **Tester** : `php artisan test --compact`
+6. **Formater** : `vendor/bin/pint --dirty`
+7. **Mettre à jour CLAUDE.md** : Si l'architecture change
+
+### Conventions
+
+- **Pages** : `resources/views/pages/` — une vue par page
+- **Composants** : `resources/views/components/[catégorie]/[nom].blade.php`
+- **Layouts** : `resources/views/layouts/` — structure HTML globale
+- **Routes** : toujours nommées, préférer `route()` à `url()`
+- **Vues Blade** : kebab-case (`home.blade.php`, `navbar.blade.php`)
+- **Classes PHP** : PascalCase (`PageController.php`)
+
+### Communication
+- Toujours vérifier les fichiers existants avant de modifier
+- Respecter la structure de dossiers établie
+- Ne jamais supprimer de tests sans approbation explicite
+
+## 📊 État de l'Implémentation
+
+### ✅ Complété
+
+- Thème GitHub Dark/Light via variables CSS + toggle persisté
+- Layout principal (`layouts/app.blade.php`) avec composants Blade
+- Composants : `<x-layout.navbar>`, `<x-layout.footer>`, `<x-ui.button>`
+- Page Home (hero identique au React template)
+- Page Laravel (welcome page originale stylisée)
+- Routes nommées (`home`, `laravel`) via `PageController`
+
+### 🔄 À Faire
+
+- [ ] Authentification (Login / Register / Logout)
+- [ ] Google OAuth via Socialite
+- [ ] Système de rôles (`user` / `admin`)
+- [ ] Page Dashboard (protégée, auth)
+- [ ] Page Admin (protégée, rôle admin)
+- [ ] Composant `<x-shared.avatar>`
+- [ ] Composant `<x-ui.input>` et `<x-ui.form-field>`
+- [ ] Migrations production (PostgreSQL)
+- [ ] Tests Feature pour les routes publiques
+- [ ] CI/CD GitHub Actions
+

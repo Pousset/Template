@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      portfolio:
+        specifier: 'file:'
+        version: 'file:'
     devDependencies:
       concurrently:
         specifier: ^9.1.2
@@ -60,6 +64,9 @@ packages:
   is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
+
+  'portfolio@file:':
+    resolution: {directory: '', type: directory}
 
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
@@ -154,6 +161,8 @@ snapshots:
   has-flag@4.0.0: {}
 
   is-fullwidth-code-point@3.0.0: {}
+
+  'portfolio@file:': {}
 
   require-directory@2.1.1: {}
 

@@ -1,9 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* Active le dark mode via la classe .dark sur <html> */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Dark mode (défaut) — GitHub Dark */
+:root {
+    --color-text-primary: #e6edf3;
+    --color-text-secondary: #7d8590;
+    --color-text-muted: #656d76;
+    --color-bg-primary: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-elevated: #1c2128;
+    --color-border: #21262d;
+    --color-border-subtle: #30363d;
+    --color-border-strong: #484f58;
+    --color-primary: #2f81f7;
+    --color-primary-light: #79c0ff;
+    --color-primary-subtle: #121d2f;
+}
+
+/* Light mode — GitHub Light */
+:root:not(.dark) {
+    --color-text-primary: #1f2328;
+    --color-text-secondary: #656d76;
+    --color-text-muted: #9198a1;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f6f8fa;
+    --color-bg-elevated: #eaeef2;
+    --color-border: #d0d7de;
+    --color-border-subtle: #afb8c1;
+    --color-border-strong: #8c959f;
+    --color-primary: #0969da;
+    --color-primary-light: #0969da;
+    --color-primary-subtle: #ddf4ff;
+}
+
+html {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Utilitaires liés aux variables CSS */
+@layer utilities {
+    .text-text-primary    { color: var(--color-text-primary); }
+    .text-text-secondary  { color: var(--color-text-secondary); }
+    .text-text-muted      { color: var(--color-text-muted); }
+    .text-primary         { color: var(--color-primary); }
+    .text-primary-light   { color: var(--color-primary-light); }
+    .bg-bg-primary        { background-color: var(--color-bg-primary); }
+    .bg-bg-secondary      { background-color: var(--color-bg-secondary); }
+    .bg-bg-elevated       { background-color: var(--color-bg-elevated); }
+    .bg-primary-subtle    { background-color: var(--color-primary-subtle); }
+    .border-border        { border-color: var(--color-border); }
+    .border-border-subtle { border-color: var(--color-border-subtle); }
+    .border-border-strong { border-color: var(--color-border-strong); }
+
+    .hover\:text-text-primary:hover  { color: var(--color-text-primary); }
+    .hover\:text-primary-light:hover { color: var(--color-primary-light); }
+    .hover\:border-border-strong:hover { border-color: var(--color-border-strong); }
+    .hover\:bg-bg-secondary:hover { background-color: var(--color-bg-secondary); }
+
+    /* Bouton primaire */
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        border: 1px solid transparent;
+        background-color: var(--color-primary);
+        color: #ffffff;
+        text-decoration: none;
+        transition: background-color 0.15s, opacity 0.15s;
+        cursor: pointer;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    /* Bouton secondaire (même style que le React template) */
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        border: 1px solid var(--color-border-subtle);
+        background-color: transparent;
+        color: var(--color-text-primary);
+        text-decoration: none;
+        transition: border-color 0.15s, background-color 0.15s;
+        cursor: pointer;
+    }
+    .btn-secondary:hover {
+        border-color: var(--color-border-strong);
+        background-color: var(--color-bg-secondary);
+    }
+
+    /* Lien de navigation */
+    .nav-link {
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--color-text-primary); }
+    .nav-link.active { color: var(--color-primary); }
 }
