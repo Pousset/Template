@@ -12,7 +12,7 @@ export const getDatabaseConfig = (
       type: 'postgres',
       url: databaseUrl,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: true,
       logging: nodeEnv === 'development',
       migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
       migrationsRun: false,

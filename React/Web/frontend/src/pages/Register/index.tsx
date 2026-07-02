@@ -30,8 +30,8 @@ export default function Register() {
       const data = await authService.register(username, password);
       login(data.accessToken, data.user);
       navigate('/dashboard');
-    } catch {
-      setError("Ce nom d'utilisateur est déjà pris.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
     } finally {
       setIsLoading(false);
     }

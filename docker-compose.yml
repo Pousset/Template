@@ -63,6 +63,10 @@ services:
       FRONTEND_URL: http://localhost:5173
       JWT_SECRET: change_this_in_production
       JWT_EXPIRES_IN: 7d
+      # Google OAuth — remplacer par de vraies valeurs pour activer la connexion Google
+      GOOGLE_CLIENT_ID: replace_with_real_google_client_id
+      GOOGLE_CLIENT_SECRET: replace_with_real_google_client_secret
+      GOOGLE_CALLBACK_URL: http://localhost:3001/auth/google/callback
     depends_on:
       react-web-postgres:
         condition: service_healthy
@@ -122,6 +126,10 @@ services:
       FRONTEND_URL: http://localhost:5174
       JWT_SECRET: change_this_in_production
       JWT_EXPIRES_IN: 7d
+      # Google OAuth — remplacer par de vraies valeurs pour activer la connexion Google
+      GOOGLE_CLIENT_ID: replace_with_real_google_client_id
+      GOOGLE_CLIENT_SECRET: replace_with_real_google_client_secret
+      GOOGLE_CALLBACK_URL: http://localhost:3002/auth/google/callback
     depends_on:
       react-app-postgres:
         condition: service_healthy
@@ -183,7 +191,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: postgresql://app:password@symfony-postgres:5432/app
+      DATABASE_URL: postgresql://app:password@symfony-postgres:5432/app?serverVersion=16&charset=utf8
       APP_ENV: prod
       APP_SECRET: change_this_in_production
     depends_on:

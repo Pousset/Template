@@ -1,4 +1,4 @@
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 # Extensions PHP nécessaires à Symfony + PostgreSQL
 RUN apk add --no-cache \

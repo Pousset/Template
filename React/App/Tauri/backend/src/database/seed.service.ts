@@ -4,6 +4,25 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '@/modules/user/entities/user.entity';
 
+/**
+ * Credentials identiques sur tous les projets du template.
+ *
+ * Admins (3)       : admin1@template.com → admin3@template.com  / mdp : admin
+ * Utilisateurs (10): user1@template.com  → user10@template.com  / mdp : password
+ */
+
+const SEED_ADMINS = [
+  { username: 'admin1', email: 'admin1@template.com', password: 'admin' },
+  { username: 'admin2', email: 'admin2@template.com', password: 'admin' },
+  { username: 'admin3', email: 'admin3@template.com', password: 'admin' },
+];
+
+const SEED_USERS = Array.from({ length: 10 }, (_, i) => ({
+  username: `user${i + 1}`,
+  email: `user${i + 1}@template.com`,
+  password: 'password',
+}));
+
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SeedService.name);
@@ -14,39 +33,47 @@ export class SeedService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    await this.seedAdmin();
+    await this.seedAdmins();
+    await this.seedUsers();
     await this.promoteGoogleAdmin();
   }
 
-  private async seedAdmin(): Promise<void> {
-    const username = process.env.ADMIN_USERNAME;
-    const password = process.env.ADMIN_PASSWORD;
+  private async seedAdmins(): Promise<void> {
+    for (const data of SEED_ADMINS) {
+      const existing = await this.userRepository.findOne({
+        where: { username: data.username },
+      });
+      if (existing) continue;
 
-    if (!username || !password) {
-      this.logger.warn(
-        'ADMIN_USERNAME ou ADMIN_PASSWORD non défini — seed admin ignoré.',
-      );
-      return;
+      const passwordHash = await bcrypt.hash(data.password, 10);
+      const admin = this.userRepository.create({
+        username: data.username,
+        email: data.email,
+        passwordHash,
+        role: 'admin',
+      });
+      await this.userRepository.save(admin);
+      this.logger.log(`Admin "${data.username}" créé.`);
     }
+  }
 
-    const existing = await this.userRepository.findOne({
-      where: { username },
-    });
+  private async seedUsers(): Promise<void> {
+    for (const data of SEED_USERS) {
+      const existing = await this.userRepository.findOne({
+        where: { username: data.username },
+      });
+      if (existing) continue;
 
-    if (existing) {
-      return;
+      const passwordHash = await bcrypt.hash(data.password, 10);
+      const user = this.userRepository.create({
+        username: data.username,
+        email: data.email,
+        passwordHash,
+        role: 'user',
+      });
+      await this.userRepository.save(user);
+      this.logger.log(`Utilisateur "${data.username}" créé.`);
     }
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const admin = this.userRepository.create({
-      username,
-      passwordHash,
-      role: 'admin',
-    });
-
-    await this.userRepository.save(admin);
-    this.logger.log(`Compte admin "${username}" créé avec succès.`);
   }
 
   private async promoteGoogleAdmin(): Promise<void> {
