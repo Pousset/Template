@@ -31,7 +31,7 @@ export default function Register() {
       login(data.accessToken, data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue.');
     } finally {
       setIsLoading(false);
     }

@@ -49,10 +49,12 @@ describe('SeedService', () => {
   // ─── seedAdmins ─────────────────────────────────────────────────────────────
 
   describe('seedAdmins', () => {
-    it('crée les 3 admins quand aucun n\'existe', async () => {
+    it("crée les 3 admins quand aucun n'existe", async () => {
       mockRepo.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -80,7 +82,9 @@ describe('SeedService', () => {
         .mockResolvedValue(null); // admin2, admin3, user1..10 → create
 
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -102,7 +106,9 @@ describe('SeedService', () => {
         .mockResolvedValue(null); // users → create
 
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -119,10 +125,12 @@ describe('SeedService', () => {
   // ─── seedUsers ───────────────────────────────────────────────────────────────
 
   describe('seedUsers', () => {
-    it('crée 10 utilisateurs classiques quand aucun n\'existe', async () => {
+    it("crée 10 utilisateurs classiques quand aucun n'existe", async () => {
       mockRepo.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -152,7 +160,9 @@ describe('SeedService', () => {
         .mockResolvedValue(null); // user2..10
 
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -173,7 +183,9 @@ describe('SeedService', () => {
       // Tous les seeds passent (aucun utilisateur trouvé)
       mockRepo.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
-      mockRepo.create.mockImplementation((data: Partial<User>) => ({ ...data }));
+      mockRepo.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+      }));
       mockRepo.save.mockImplementation((data: Partial<User>) =>
         Promise.resolve(data),
       );
@@ -191,7 +203,9 @@ describe('SeedService', () => {
         .mockResolvedValueOnce(googleUser)
         // Le findOne pour Google est le dernier appel
         .mockImplementation(({ where }: { where: Partial<User> }) =>
-          'email' in where ? Promise.resolve(googleUser) : Promise.resolve(null),
+          'email' in where
+            ? Promise.resolve(googleUser)
+            : Promise.resolve(null),
         );
 
       await service.onApplicationBootstrap();
@@ -227,7 +241,7 @@ describe('SeedService', () => {
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
 
-    it('ne lève pas d\'erreur si le compte Google est introuvable', async () => {
+    it("ne lève pas d'erreur si le compte Google est introuvable", async () => {
       process.env.ADMIN_GOOGLE_EMAIL = 'unknown@example.com';
       mockRepo.findOne.mockResolvedValue(null);
 
@@ -236,4 +250,3 @@ describe('SeedService', () => {
     });
   });
 });
-
