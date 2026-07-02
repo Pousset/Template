@@ -1,0 +1,204 @@
+name: template-all
+
+# ┌────────────────────────────────────────────────────────────────┐
+# │  Ports exposés sur l'hôte                                      │
+# │                                                                │
+# │  React / Web                                                   │
+# │    Frontend  → http://127.0.0.1:5173                           │
+# │    Backend   → http://127.0.0.1:3001                           │
+# │    Postgres  → 127.0.0.1:5432                                  │
+# │                                                                │
+# │  React / App Tauri  (backend + DB uniquement)                  │
+# │    ⚠ L'app Tauri desktop se lance en natif sur la machine      │
+# │      avec : cd React/App/Tauri/frontend && pnpm tauri dev      │
+# │    Backend   → http://127.0.0.1:3002                           │
+# │    Postgres  → 127.0.0.1:5433                                  │
+# │                                                                │
+# │  PHP / Laravel                                                 │
+# │    App       → http://127.0.0.1:8000  (⚠ pas localhost)       │
+# │                                                                │
+# │  PHP / Symfony                                                 │
+# │    App       → http://127.0.0.1:8080                          │
+# │    Postgres  → 127.0.0.1:5434                                  │
+# └────────────────────────────────────────────────────────────────┘
+
+services:
+  # ═══════════════════════════════════════════════════════════
+  # React / Web
+  # ═══════════════════════════════════════════════════════════
+
+  react-web-postgres:
+    image: postgres:16-alpine
+    container_name: react-web-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio_password
+      POSTGRES_DB: portfolio_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - react_web_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - react-web
+
+  react-web-backend:
+    build:
+      context: ./React/Web/backend
+      dockerfile: Dockerfile
+    container_name: react-web-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://portfolio:portfolio_password@react-web-postgres:5432/portfolio_db
+      PORT: "3001"
+      NODE_ENV: production
+      DB_SSL: "false"
+      FRONTEND_URL: http://localhost:5173
+      JWT_SECRET: change_this_in_production
+      JWT_EXPIRES_IN: 7d
+    depends_on:
+      react-web-postgres:
+        condition: service_healthy
+    networks:
+      - react-web
+
+  react-web-frontend:
+    build:
+      context: ./React/Web/frontend
+      dockerfile: Dockerfile
+    container_name: react-web-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - react-web-backend
+    networks:
+      - react-web
+
+  # ═══════════════════════════════════════════════════════════
+  # React / App (Tauri)
+  # ═══════════════════════════════════════════════════════════
+
+  react-app-postgres:
+    image: postgres:16-alpine
+    container_name: react-app-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio_password
+      POSTGRES_DB: portfolio_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - react_app_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - react-app
+
+  react-app-backend:
+    build:
+      context: ./React/App/Tauri/backend
+      dockerfile: Dockerfile
+    container_name: react-app-backend
+    restart: unless-stopped
+    ports:
+      - "3002:3001"
+    environment:
+      DATABASE_URL: postgresql://portfolio:portfolio_password@react-app-postgres:5432/portfolio_db
+      PORT: "3001"
+      NODE_ENV: production
+      DB_SSL: "false"
+      FRONTEND_URL: http://localhost:5174
+      JWT_SECRET: change_this_in_production
+      JWT_EXPIRES_IN: 7d
+    depends_on:
+      react-app-postgres:
+        condition: service_healthy
+    networks:
+      - react-app
+
+  # ⚠ react-app-frontend n'est pas dans Docker :
+  #   L'app Tauri desktop nécessite le WebView natif de l'OS.
+  #   Lancer en natif : cd React/App/Tauri/frontend && pnpm tauri dev
+  #   (pointer VITE_API_URL=http://127.0.0.1:3002 dans .env)
+
+  # ═══════════════════════════════════════════════════════════
+  # PHP / Laravel
+  # ═══════════════════════════════════════════════════════════
+
+  laravel:
+    build:
+      context: ./Php/Laravel
+      dockerfile: Dockerfile
+    container_name: laravel
+    restart: unless-stopped
+    ports:
+      # Binding explicite IPv4 : contourne la résolution IPv6 de "localhost" sur Windows
+      # → utiliser http://127.0.0.1:8000 (pas http://localhost:8000)
+      - "127.0.0.1:8000:8000"
+    networks:
+      - laravel
+
+  # ═══════════════════════════════════════════════════════════
+  # PHP / Symfony
+  # ═══════════════════════════════════════════════════════════
+
+  symfony-postgres:
+    image: postgres:16-alpine
+    container_name: symfony-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    ports:
+      - "5434:5432"
+    volumes:
+      - symfony_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "app", "-U", "app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - symfony
+
+  symfony:
+    build:
+      context: ./Php/Symfony/Web
+      dockerfile: Dockerfile
+    container_name: symfony
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://app:password@symfony-postgres:5432/app
+      APP_ENV: prod
+      APP_SECRET: change_this_in_production
+    depends_on:
+      symfony-postgres:
+        condition: service_healthy
+    networks:
+      - symfony
+
+networks:
+  react-web:
+  react-app:
+  laravel:
+  symfony:
+
+volumes:
+  react_web_postgres_data:
+  react_app_postgres_data:
+  symfony_postgres_data:

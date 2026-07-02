@@ -1,0 +1,8 @@
+vendor/
+node_modules/
+.git/
+var/cache/
+var/log/
+.env.local
+.env.local.php
+*.log
