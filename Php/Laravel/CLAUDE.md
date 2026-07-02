@@ -87,7 +87,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+    - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -200,15 +200,15 @@ Laravel/
 
 Le thème est géré via des **variables CSS** sur `:root`. Le mode sombre est actif par défaut. La préférence est persistée dans `localStorage` via un script JS dans le layout.
 
-| Variable CSS | Dark | Light |
-|---|---|---|
-| `--color-bg-primary` | `#0d1117` | `#ffffff` |
-| `--color-bg-secondary` | `#161b22` | `#f6f8fa` |
-| `--color-bg-elevated` | `#1c2128` | `#eaeef2` |
-| `--color-text-primary` | `#e6edf3` | `#1f2328` |
+| Variable CSS             | Dark      | Light     |
+| ------------------------ | --------- | --------- |
+| `--color-bg-primary`     | `#0d1117` | `#ffffff` |
+| `--color-bg-secondary`   | `#161b22` | `#f6f8fa` |
+| `--color-bg-elevated`    | `#1c2128` | `#eaeef2` |
+| `--color-text-primary`   | `#e6edf3` | `#1f2328` |
 | `--color-text-secondary` | `#7d8590` | `#656d76` |
-| `--color-primary` | `#2f81f7` | `#0969da` |
-| `--color-border` | `#21262d` | `#d0d7de` |
+| `--color-primary`        | `#2f81f7` | `#0969da` |
+| `--color-border`         | `#21262d` | `#d0d7de` |
 
 ### Classes utilitaires disponibles
 
@@ -224,17 +224,20 @@ nav-link / nav-link.active
 ## 🧩 Composants Blade
 
 ### Layout
-| Composant | Description |
-|---|---|
-| `<x-layout.navbar />` | Barre de navigation principale |
+
+| Composant             | Description                       |
+| --------------------- | --------------------------------- |
+| `<x-layout.navbar />` | Barre de navigation principale    |
 | `<x-layout.footer />` | Pied de page avec icônes sociales |
 
 ### UI
-| Composant | Props | Description |
-|---|---|---|
+
+| Composant       | Props                                                           | Description              |
+| --------------- | --------------------------------------------------------------- | ------------------------ |
 | `<x-ui.button>` | `variant` (primary\|secondary), `href`, `type`, `size` (sm\|md) | Bouton/lien réutilisable |
 
 **Exemple :**
+
 ```blade
 <x-ui.button variant="primary" href="{{ route('home') }}">
     Accéder
@@ -243,12 +246,13 @@ nav-link / nav-link.active
 
 ## 🔗 Routes
 
-| Route | Nom | Vue | Description |
-|---|---|---|---|
-| `GET /` | `home` | `pages.home` | Page d'accueil (hero) |
+| Route          | Nom       | Vue             | Description               |
+| -------------- | --------- | --------------- | ------------------------- |
+| `GET /`        | `home`    | `pages.home`    | Page d'accueil (hero)     |
 | `GET /laravel` | `laravel` | `pages.laravel` | Page de bienvenue Laravel |
 
 **Futur :**
+
 ```
 GET  /login         auth.login      Page de connexion
 POST /login         auth.login      Traitement connexion
@@ -262,13 +266,15 @@ GET  /admin         admin.index     Espace admin (rôle admin)
 ## 👤 Système d'Authentification (À venir)
 
 ### Rôles utilisateurs
-| Rôle | Description | Accès |
-|---|---|---|
-| `guest` | Visiteur non connecté | Pages publiques uniquement |
-| `user` | Connecté | Pages publiques + Dashboard |
-| `admin` | Administrateur | Tout + page Admin exclusive |
+
+| Rôle    | Description           | Accès                       |
+| ------- | --------------------- | --------------------------- |
+| `guest` | Visiteur non connecté | Pages publiques uniquement  |
+| `user`  | Connecté              | Pages publiques + Dashboard |
+| `admin` | Administrateur        | Tout + page Admin exclusive |
 
 ### Méthodes prévues
+
 - **Inscription classique** : nom d'utilisateur + mot de passe (bcrypt)
 - **Google OAuth** : via Socialite
 
@@ -318,6 +324,7 @@ vendor/bin/pint --dirty
 - **Classes PHP** : PascalCase (`PageController.php`)
 
 ### Communication
+
 - Toujours vérifier les fichiers existants avant de modifier
 - Respecter la structure de dossiers établie
 - Ne jamais supprimer de tests sans approbation explicite
@@ -348,4 +355,3 @@ vendor/bin/pint --dirty
 - [ ] Migrations production (PostgreSQL)
 - [ ] Tests Feature pour les routes publiques
 - [ ] CI/CD GitHub Actions
-
