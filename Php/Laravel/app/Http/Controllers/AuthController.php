@@ -27,12 +27,16 @@ class AuthController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+        $request->validate([
+            'login'    => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $login    = $request->string('login')->toString();
+        $field    = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $remember = $request->boolean('remember');
+
+        if (Auth::attempt([$field => $login, 'password' => $request->input('password')], $remember)) {
             $request->session()->regenerate();
 
             return redirect()->intended(
@@ -41,8 +45,8 @@ class AuthController extends Controller
         }
 
         return back()
-            ->withErrors(['email' => 'Identifiants incorrects.'])
-            ->onlyInput('email');
+            ->withErrors(['login' => 'Identifiants incorrects.'])
+            ->onlyInput('login');
     }
 
     // ── Inscription ──────────────────────────────────────────────────────────
@@ -51,12 +55,14 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name'                  => ['required', 'string', 'max:120'],
+            'username'              => ['required', 'string', 'min:3', 'max:50', 'alpha_dash', 'unique:users,username'],
             'email'                 => ['required', 'email', 'unique:users,email'],
             'password'              => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $user = User::create([
             'name'     => $data['name'],
+            'username' => $data['username'],
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
             'role'     => 'user',

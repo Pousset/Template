@@ -17,6 +17,7 @@ class AdminSeeder extends Seeder
         $admins = [
             [
                 'name'              => 'Admin 1',
+                'username'          => 'admin1',
                 'email'             => 'admin1@template.com',
                 'password'          => Hash::make('admin'),
                 'role'              => 'admin',
@@ -24,6 +25,7 @@ class AdminSeeder extends Seeder
             ],
             [
                 'name'              => 'Admin 2',
+                'username'          => 'admin2',
                 'email'             => 'admin2@template.com',
                 'password'          => Hash::make('admin'),
                 'role'              => 'admin',
@@ -31,6 +33,7 @@ class AdminSeeder extends Seeder
             ],
             [
                 'name'              => 'Admin 3',
+                'username'          => 'admin3',
                 'email'             => 'admin3@template.com',
                 'password'          => Hash::make('admin'),
                 'role'              => 'admin',

@@ -34,6 +34,26 @@
                 @enderror
             </div>
 
+            {{-- Nom d'utilisateur --}}
+            <div class="space-y-1">
+                <label for="username" class="block text-sm font-medium text-text-primary">
+                    Nom d'utilisateur <span class="text-text-muted">(3-50 caractères, lettres, chiffres, _ ou -)</span>
+                </label>
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autocomplete="username"
+                    required
+                    value="{{ old('username') }}"
+                    class="w-full rounded-lg border border-border bg-bg-secondary px-4 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary @error('username') border-red-500 @enderror"
+                    placeholder="johndoe"
+                />
+                @error('username')
+                    <p class="text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
             {{-- Email --}}
             <div class="space-y-1">
                 <label for="email" class="block text-sm font-medium text-text-primary">

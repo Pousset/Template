@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil — {{ app_name }}{% endblock %}
+
+{% block body %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">// Symfony 8 · PostgreSQL · Auth</p>
+    <h1>Template<br><span class="accent">Symfony</span></h1>
+    <p class="lead">
+      Un point de départ propre avec authentification complète (e-mail ou nom d'utilisateur),
+      espace admin et dashboard — prêt à être cloné et adapté.
+    </p>
+    <div class="hero-cta">
+      {% if app.user %}
+        <a href="{{ path('app_dashboard') }}" class="btn btn-primary">Aller au dashboard →</a>
+      {% else %}
+        <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
+        <a href="{{ path('app_login') }}" class="btn btn-ghost">Se connecter</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="hero-panel">
+    <div class="metric">
+      <span class="metric-label">Framework</span>
+      <span class="metric-value">Symfony 8</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Auth</span>
+      <span class="metric-value">Email / Username</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Base de données</span>
+      <span class="metric-value">PostgreSQL 16</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">ORM</span>
+      <span class="metric-value">Doctrine 3</span>
+    </div>
+  </div>
+</section>
+{% endblock %}
