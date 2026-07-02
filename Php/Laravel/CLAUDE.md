@@ -275,14 +275,12 @@ GET  /admin         admin.index     Espace admin (rôle admin)
 ## 🚀 Commandes Utiles
 
 ```bash
-# Démarrer le serveur Laravel (NÉCESSAIRE pour voir l'app)
-php artisan serve
+# Lancer Laravel + Vite simultanément (recommandé)
+npm run start
 
-# Démarrer Vite (hot reload CSS/JS)
-npm run dev
-
-# Démarrer les deux en même temps
-composer run dev
+# Ou séparément :
+php artisan serve   # Laravel → http://127.0.0.1:8000
+npm run dev         # Vite   → hot-reload CSS/JS
 
 # Build production
 npm run build
@@ -290,13 +288,13 @@ npm run build
 # Lancer les tests
 php artisan test --compact
 
-# Formater le code
+# Formater le code PHP
 vendor/bin/pint --dirty
 ```
 
 > **Note importante** : `npm run dev` démarre uniquement Vite (le bundler CSS/JS).
-> Pour accéder à l'application Laravel, il faut AUSSI lancer `php artisan serve`.
-> Utiliser `composer run dev` lance les deux simultanément.
+> Pour voir l'app, il faut toujours accéder au port **8000** (`php artisan serve`).
+> `npm run start` lance les deux en même temps via `concurrently`.
 
 ## 🤖 Instructions pour Claude
 
@@ -334,6 +332,9 @@ vendor/bin/pint --dirty
 - Page Home (hero identique au React template)
 - Page Laravel (welcome page originale stylisée)
 - Routes nommées (`home`, `laravel`) via `PageController`
+- Script `npm run start` (Laravel + Vite via concurrently)
+- README.md avec guide d'installation complet
+- Base SQLite initialisée avec migrations
 
 ### 🔄 À Faire
 
