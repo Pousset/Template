@@ -14,22 +14,22 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-6">
             @csrf
 
-            {{-- Email --}}
+            {{-- E-mail ou nom d'utilisateur --}}
             <div class="space-y-1">
-                <label for="email" class="block text-sm font-medium text-text-primary">
-                    Adresse e-mail
+                <label for="login" class="block text-sm font-medium text-text-primary">
+                    E-mail ou nom d'utilisateur
                 </label>
                 <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autocomplete="email"
+                    id="login"
+                    name="login"
+                    type="text"
+                    autocomplete="username"
                     required
-                    value="{{ old('email') }}"
-                    class="w-full rounded-lg border border-border bg-bg-secondary px-4 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary @error('email') border-red-500 @enderror"
-                    placeholder="toi@exemple.com"
+                    value="{{ old('login') }}"
+                    class="w-full rounded-lg border border-border bg-bg-secondary px-4 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary @error('login') border-red-500 @enderror"
+                    placeholder="toi@exemple.com ou johndoe"
                 />
-                @error('email')
+                @error('login')
                     <p class="text-xs text-red-500">{{ $message }}</p>
                 @enderror
             </div>

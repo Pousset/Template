@@ -4,21 +4,40 @@
   "private": true,
   "scripts": {
     "install:all": "npm run react:web:install && npm run react:app:install && npm run php:symfony:install && npm run php:laravel:install",
+
     "dev:react:web": "npm --prefix React/Web run dev",
     "dev:react:app": "npm --prefix React/App/Tauri run dev",
-    "dev:symfony": "npm --prefix Php/Symfony/Web run dev",
+
     "build:react:web": "npm --prefix React/Web run build",
     "build:react:app": "npm --prefix React/App/Tauri run build",
-    "lint": "npm run lint:react:web && npm run lint:react:app && npm run lint:symfony",
+
+    "lint": "npm run lint:react:web && npm run lint:react:app",
     "lint:react:web": "npm --prefix React/Web run lint",
     "lint:react:app": "npm --prefix React/App/Tauri run lint",
-    "lint:symfony": "npm --prefix Php/Symfony/Web run lint",
-    "test": "npm run test:symfony",
-    "test:symfony": "npm --prefix Php/Symfony/Web run test",
-    "audit:symfony": "npm --prefix Php/Symfony/Web run audit",
-    "symfony:install": "npm --prefix Php/Symfony/Web run install:deps",
-    "symfony:setup": "npm --prefix Php/Symfony/Web run setup",
+
+    "test:symfony": "npm --prefix Php/Symfony run test",
+
     "react:web:install": "npm --prefix React/Web run install:all",
-    "react:app:install": "npm --prefix React/App/Tauri run install:all"
+    "react:app:install": "npm --prefix React/App/Tauri run install:all",
+
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose ps",
+
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d",
+    "docker:rebuild:laravel": "docker compose build --no-cache laravel && docker compose up -d laravel",
+    "docker:rebuild:symfony": "docker compose build --no-cache symfony && docker compose up -d symfony symfony-postgres",
+    "docker:rebuild:react-web": "docker compose build --no-cache react-web-frontend react-web-backend && docker compose up -d react-web-frontend react-web-backend react-web-postgres",
+    "docker:rebuild:react-app": "docker compose build --no-cache react-app-backend && docker compose up -d react-app-backend react-app-postgres",
+
+    "laravel:db:reset": "docker compose exec laravel php artisan migrate:fresh --force && docker compose exec laravel php artisan db:seed --force",
+    "laravel:db:seed": "docker compose exec laravel php artisan db:seed --force",
+    "laravel:db:migrate": "docker compose exec laravel php artisan migrate --force",
+    "laravel:shell": "docker compose exec laravel sh",
+
+    "symfony:db:reset": "docker compose exec symfony php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration && docker compose exec symfony php bin/console app:seed",
+    "symfony:db:migrate": "docker compose exec symfony php bin/console doctrine:migrations:migrate --no-interaction",
+    "symfony:shell": "docker compose exec symfony sh"
   }
 }

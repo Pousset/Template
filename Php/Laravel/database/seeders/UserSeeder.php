@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
                 ['email' => "user{$i}@template.com"],
                 [
                     'name'              => "User {$i}",
+                    'username'          => "user{$i}",
                     'email'             => "user{$i}@template.com",
                     'password'          => Hash::make('password'),
                     'role'              => 'user',

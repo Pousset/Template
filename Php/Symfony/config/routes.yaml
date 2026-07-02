@@ -1,0 +1,7 @@
+# Chargement automatique des routes via les attributs #[Route] dans src/Controller/
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+

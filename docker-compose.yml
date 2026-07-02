@@ -184,7 +184,7 @@ services:
 
   symfony:
     build:
-      context: ./Php/Symfony/Web
+      context: ./Php/Symfony
       dockerfile: Dockerfile
     container_name: symfony
     restart: unless-stopped
